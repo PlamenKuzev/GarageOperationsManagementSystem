@@ -17,10 +17,10 @@
 
   <ItemGroup>
     <Folder Include="Interfaces\" />
+    <Folder Include="Models\" />
     <Folder Include="Tests\" />
     <Folder Include="Seed\" />
     <Folder Include="Services\" />
-    <Folder Include="ViewModels\" />
   </ItemGroup>
 
 </Project>
