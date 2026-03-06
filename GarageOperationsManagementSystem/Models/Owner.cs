@@ -15,6 +15,6 @@ namespace GarageOperationsManagementSystem.Models
         [EmailAddress]
         public string Email { get; set; }
 
-        //public ICollection<Car> Cars { get; set; } = new List<Car>();
+        public ICollection<Car> Cars { get; set; } = new List<Car>();
     }
 }

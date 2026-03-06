@@ -19,6 +19,7 @@ namespace GarageOperationsManagementSystem.Models
 
         public Owner Owner { get; set; }
 
-        //public ICollection<RepairOrder> RepairOrders { get; set; } = new List<RepairOrder>();
+
+        public ICollection<RepairOrder> RepairOrders { get; set; } = new List<RepairOrder>();
     }
 }
