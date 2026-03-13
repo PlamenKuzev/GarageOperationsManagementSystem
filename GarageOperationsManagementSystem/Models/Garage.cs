@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace GarageOperationsManagementSystem.Models
 {
@@ -7,14 +8,15 @@ namespace GarageOperationsManagementSystem.Models
         public int Id { get; set; }
 
         [Required]
-        public string City { get; set; }
+        public string City { get; set; } = null!;
 
         [Required]
-        public string Address { get; set; }
+        public string Address { get; set; } = null!;
 
         public int Capacity { get; set; }
 
-        public string WorkSchedule { get; set; }
+        [Required]
+        public string WorkSchedule { get; set; } = null!;
 
         public ICollection<Employee> Employees { get; set; } = new List<Employee>();
 

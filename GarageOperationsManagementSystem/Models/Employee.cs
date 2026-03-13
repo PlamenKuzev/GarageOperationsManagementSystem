@@ -1,12 +1,16 @@
-﻿namespace GarageOperationsManagementSystem.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GarageOperationsManagementSystem.Models
 {
     public class Employee
     {
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        [Required]
+        public string Name { get; set; } = null!;
 
-        public string Position { get; set; }
+        [Required]
+        public string Position { get; set; } = null!;
 
         public decimal Salary { get; set; }
 
@@ -14,6 +18,7 @@
 
         public int GarageId { get; set; }
 
-        public Garage Garage { get; set; }
+        [Required]
+        public Garage Garage { get; set; } = null!;
     }
 }

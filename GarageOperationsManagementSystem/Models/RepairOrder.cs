@@ -9,7 +9,8 @@ namespace GarageOperationsManagementSystem.Models
         [Required]
         public string IssueCode { get; set; } = null!;
 
-        public string IssueDescription { get; set; }
+        [Required]
+        public string IssueDescription { get; set; } = null!;
 
         public DateTime ArrivalDate { get; set; }
 
@@ -21,11 +22,13 @@ namespace GarageOperationsManagementSystem.Models
 
         public int CarId { get; set; }
 
-        public Car Car { get; set; }
+        [Required]
+        public Car Car { get; set; } = null!;
 
         public int GarageId { get; set; }
 
-        public Garage Garage { get; set; }
+        [Required]
+        public Garage Garage { get; set; } = null!;
 
     }
 }

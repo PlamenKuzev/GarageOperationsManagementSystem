@@ -10,10 +10,12 @@ namespace GarageOperationsManagementSystem.Models
         public string FullName { get; set; } = null!;
 
         [Phone]
-        public string PhoneNumber { get; set; }
+        [Required]
+        public string PhoneNumber { get; set; } = null!;
 
         [EmailAddress]
-        public string Email { get; set; }
+        [Required]
+        public string Email { get; set; } = null!;
 
         public ICollection<Car> Cars { get; set; } = new List<Car>();
     }

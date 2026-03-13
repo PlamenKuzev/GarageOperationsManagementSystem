@@ -6,7 +6,8 @@ namespace GarageOperationsManagementSystem.Models
     {
         public int Id { get; set; }
 
-        public string Brand { get; set; }
+        [Required]
+        public required string Brand { get; set; } = null!;
 
         [Required]
         public string Model { get; set; } = null!;
@@ -17,7 +18,8 @@ namespace GarageOperationsManagementSystem.Models
 
         public int OwnerId { get; set; }
 
-        public Owner Owner { get; set; }
+        [Required]
+        public Owner Owner { get; set; } = null!;
 
 
         public ICollection<RepairOrder> RepairOrders { get; set; } = new List<RepairOrder>();
