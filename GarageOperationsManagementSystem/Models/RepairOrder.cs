@@ -18,7 +18,7 @@ namespace GarageOperationsManagementSystem.Models
 
         public bool IsCompleted { get; set; }
 
-        public decimal? ReapairPrice { get; set; }
+        public decimal? RepairPrice { get; set; }
 
         public int CarId { get; set; }
 
