@@ -1,4 +1,6 @@
 using GarageOperationsManagementSystem.Data;
+using GarageOperationsManagementSystem.Interfaces;
+using GarageOperationsManagementSystem.Services.Implementations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +22,11 @@ namespace GarageOperationsManagementSystem
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
 
+      
+            builder.Services.AddScoped<IGarageService, GarageService>();
+            builder.Services.AddScoped<ICarService, CarService>();
+            builder.Services.AddScoped<IRepairOrderService, RepairOrderService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -34,6 +41,8 @@ namespace GarageOperationsManagementSystem
                 app.UseHsts();
             }
 
+
+            
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
