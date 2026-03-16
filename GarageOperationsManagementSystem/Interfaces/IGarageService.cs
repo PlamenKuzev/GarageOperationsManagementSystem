@@ -6,7 +6,7 @@ namespace GarageOperationsManagementSystem.Interfaces
     {
         Task<IEnumerable<Garage>> GetAllGaragesAsync();
 
-        Task<Garage> GetGaragesByIdAsync(int Id);
+        Task<Garage> GetGarageByIdAsync(int Id);
 
         Task CreateGarageAsync(Garage garage);
 
