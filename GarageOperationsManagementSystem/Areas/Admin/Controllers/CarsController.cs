@@ -3,7 +3,7 @@ using GarageOperationsManagementSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 
 
-namespace GarageOperationsManagementSystem.Controllers
+namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
 {
     public class CarsController : Controller
     {

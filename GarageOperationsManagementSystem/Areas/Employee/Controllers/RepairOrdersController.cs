@@ -2,7 +2,7 @@
 using GarageOperationsManagementSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GarageOperationsManagementSystem.Controllers
+namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
 {
     public class RepairOrdersController : Controller
     {
