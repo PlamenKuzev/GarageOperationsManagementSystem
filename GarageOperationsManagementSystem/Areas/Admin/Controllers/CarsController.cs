@@ -1,11 +1,13 @@
 ﻿using GarageOperationsManagementSystem.Interfaces;
 using GarageOperationsManagementSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class CarsController : Controller
     {
         private readonly ICarService _carService;

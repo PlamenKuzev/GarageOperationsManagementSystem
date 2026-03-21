@@ -1,10 +1,12 @@
 ﻿using GarageOperationsManagementSystem.Interfaces;
 using GarageOperationsManagementSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
 {
     [Area("Employee")]
+    [Authorize(Roles = "Admin,Employee")]
     public class RepairOrdersController : Controller
     {
         private readonly IRepairOrderService _repairService;
