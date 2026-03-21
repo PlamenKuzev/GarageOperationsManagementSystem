@@ -1,0 +1,11 @@
+﻿@model IEnumerable<GarageOperationsManagementSystem.Models.Car>
+
+<h2>Admin - Cars </h2>
+
+<ul>
+@foreach (var car in Model)
+    {
+        <li>@car.Brand - @car.Model</li>
+    }    
+
+</ul>

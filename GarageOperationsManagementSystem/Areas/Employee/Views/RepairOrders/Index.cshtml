@@ -1,0 +1,11 @@
+﻿@model IEnumerable<GarageOperationsManagementSystem.Models.RepairOrder>
+
+<h2>Employee - Repair Orders </h2>
+
+<ul> 
+@foreach (var order in Model)
+    {
+        <li>@order.IssueCode - @(order.IsCompleted ? "Done" : "In Progress") </li>
+    }
+
+</ul>
