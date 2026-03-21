@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
 {
+    [Area("Employee")]
     public class RepairOrdersController : Controller
     {
         private readonly IRepairOrderService _repairService;
