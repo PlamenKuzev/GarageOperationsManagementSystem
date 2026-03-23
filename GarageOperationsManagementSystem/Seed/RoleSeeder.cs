@@ -28,7 +28,7 @@ namespace GarageOperationsManagementSystem.Seed
                 var admin = new ApplicationUser()
                 {
                     UserName = adminEmail,
-                    Email = adminPassword,
+                    Email = adminEmail,
                     PasswordHash = adminPassword
                 };
 
