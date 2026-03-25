@@ -1,4 +1,4 @@
-﻿using GarageOperationsManagementSystem.Models;
+using GarageOperationsManagementSystem.Models;
 
 namespace GarageOperationsManagementSystem.Interfaces
 {
@@ -6,10 +6,14 @@ namespace GarageOperationsManagementSystem.Interfaces
     {
         Task<IEnumerable<Garage>> GetAllGaragesAsync();
 
-        Task<Garage> GetGarageByIdAsync(int Id);
+        Task<Garage?> GetGarageByIdAsync(int id);
 
         Task CreateGarageAsync(Garage garage);
 
-        Task DeleteGarageAsync(int Id);
+        Task CreateGaragesAsync(IEnumerable<Garage> garages);
+
+        Task UpdateGarageAsync(Garage garage);
+
+        Task DeleteGarageAsync(int id);
     }
 }

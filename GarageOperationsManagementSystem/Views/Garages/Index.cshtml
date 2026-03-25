@@ -1,0 +1,48 @@
+@model IEnumerable<GarageOperationsManagementSystem.Models.Garage>
+
+@{
+    ViewData["Title"] = "Garages";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Garages</h2>
+    <div class="d-flex gap-2">
+        <a asp-action="MapView" class="btn btn-info">Map View</a>
+        <form asp-action="LoadDemoData" method="post" class="d-inline">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-secondary">Load Demo Data</button>
+        </form>
+        <a asp-action="Create" class="btn btn-primary">Create Garage</a>
+    </div>
+</div>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>City</th>
+            <th>Address</th>
+            <th>Capacity</th>
+            <th>Work Schedule</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th style="width: 180px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var garage in Model)
+    {
+        <tr>
+            <td>@garage.City</td>
+            <td>@garage.Address</td>
+            <td>@garage.Capacity</td>
+            <td>@garage.WorkSchedule</td>
+            <td>@garage.Latitude</td>
+            <td>@garage.Longitude</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@garage.Id" class="btn btn-sm btn-warning me-2">Edit</a>
+                <a asp-action="Delete" asp-route-id="@garage.Id" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

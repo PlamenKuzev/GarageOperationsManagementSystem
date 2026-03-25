@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
 namespace GarageOperationsManagementSystem.Models
@@ -17,6 +17,10 @@ namespace GarageOperationsManagementSystem.Models
 
         [Required]
         public string WorkSchedule { get; set; } = null!;
+
+        public double? Latitude { get; set; }
+
+        public double? Longitude { get; set; }
 
         public ICollection<Employee> Employees { get; set; } = new List<Employee>();
 

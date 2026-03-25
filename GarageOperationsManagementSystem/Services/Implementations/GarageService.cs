@@ -1,4 +1,4 @@
-﻿using GarageOperationsManagementSystem.Data;
+using GarageOperationsManagementSystem.Data;
 using GarageOperationsManagementSystem.Interfaces;
 using GarageOperationsManagementSystem.Models;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +21,7 @@ namespace GarageOperationsManagementSystem.Services.Implementations
             return await _context.Garages.ToListAsync();
         }
 
-        public async Task<Garage> GetGarageByIdAsync(int id)
+        public async Task<Garage?> GetGarageByIdAsync(int id)
         {
             return await _context.Garages.FirstOrDefaultAsync(g => g.Id == id);
         }
@@ -29,6 +29,18 @@ namespace GarageOperationsManagementSystem.Services.Implementations
         public async Task CreateGarageAsync(Garage garage)
         {
             _context.Garages.Add(garage);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task CreateGaragesAsync(IEnumerable<Garage> garages)
+        {
+            _context.Garages.AddRange(garages);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateGarageAsync(Garage garage)
+        {
+            _context.Garages.Update(garage);
             await _context.SaveChangesAsync();
         }
 

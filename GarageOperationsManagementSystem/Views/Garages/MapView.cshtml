@@ -1,0 +1,60 @@
+@model IEnumerable<GarageOperationsManagementSystem.Models.Garage>
+@using System.Text.Json
+
+@{
+    ViewData["Title"] = "Garage Map";
+    var mapData = Model
+        .Where(g => g.Latitude.HasValue && g.Longitude.HasValue)
+        .Select(g => new
+        {
+            g.Id,
+            g.City,
+            g.Address,
+            g.Latitude,
+            g.Longitude
+        })
+        .ToList();
+}
+
+<h2>Garage Map View</h2>
+<p class="text-muted">Showing all garages with valid coordinates.</p>
+<a asp-action="Index" class="btn btn-secondary mb-3">Back to list</a>
+
+<div id="garage-map" style="height: 600px; width: 100%;"></div>
+
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin="" />
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+
+<script>
+    const garages = @Html.Raw(JsonSerializer.Serialize(mapData));
+
+    const map = L.map("garage-map").setView([42.7339, 25.4858], 7);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    const bounds = [];
+    garages.forEach(g => {
+        const lat = g.latitude ?? g.Latitude;
+        const lng = g.longitude ?? g.Longitude;
+        if (lat == null || lng == null) {
+            return;
+        }
+
+        const marker = L.marker([lat, lng]).addTo(map);
+        marker.bindPopup(`<strong>${g.city ?? g.City}</strong><br/>${g.address ?? g.Address}`);
+        bounds.push([lat, lng]);
+    });
+
+    if (bounds.length > 0) {
+        map.fitBounds(bounds, { padding: [30, 30] });
+    }
+</script>
