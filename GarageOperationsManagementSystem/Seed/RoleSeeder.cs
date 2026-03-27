@@ -1,5 +1,4 @@
-﻿using Azure.Identity;
-using GarageOperationsManagementSystem.Models;
+﻿using GarageOperationsManagementSystem.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace GarageOperationsManagementSystem.Seed
@@ -10,7 +9,7 @@ namespace GarageOperationsManagementSystem.Seed
             RoleManager<IdentityRole> roleManager,
             UserManager<ApplicationUser> userManager)
         {
-            string[] roles = { "Admin", "Employee", "Customer" };
+            string[] roles = { "Admin", "Employee", "Guest" };
 
             foreach (var role in roles)
             {
@@ -20,6 +19,7 @@ namespace GarageOperationsManagementSystem.Seed
                 }
             }
 
+            var adminName = "Admin";
             var adminEmail = "admin@garage.com";
             var adminPassword = "Admin123!";
 
@@ -27,9 +27,8 @@ namespace GarageOperationsManagementSystem.Seed
             {
                 var admin = new ApplicationUser()
                 {
-                    UserName = adminEmail,
+                    UserName = adminName,
                     Email = adminEmail,
-                    PasswordHash = adminPassword
                 };
 
                 await userManager.CreateAsync(admin, adminPassword);
