@@ -1,0 +1,51 @@
+﻿@model GarageOperationsManagementSystem.Models.RepairOrder
+
+<h2>Create Repair Order</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <div>
+        <label asp-for="IssueCode"></label>
+        <input asp-for="IssueCode" />
+    </div>
+
+    <div>
+        <label asp-for="IssueDescription"></label>
+        <input asp-for="IssueDescription" />
+    </div>
+
+    <div>
+        <label asp-for="ArrivalDate"></label>
+        <input asp-for="ArrivalDate" type="datetime-local" />
+    </div>
+
+    <div>
+        <label asp-for="CompletionDate"></label>
+        <input asp-for="CompletionDate" type="datetime-local" />
+    </div>
+
+    <div>
+        <label asp-for="IsCompleted"></label>
+        <input asp-for="IsCompleted" />
+    </div>
+
+    <div>
+        <label asp-for="RepairPrice"></label>
+        <input asp-for="RepairPrice" />
+    </div>
+
+    <div>
+        <label asp-for="CarId"></label>
+        <select asp-for="CarId" asp-items="ViewBag.CarId"></select>
+    </div>
+
+    <div>
+        <label asp-for="GarageId"></label>
+        <select asp-for="GarageId" asp-items="ViewBag.GarageId"></select>
+    </div>
+
+    <button type="submit">Create</button>
+</form>
+
+<p><a asp-action="Index">Back to List</a></p>

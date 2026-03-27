@@ -1,0 +1,23 @@
+﻿@model IEnumerable<GarageOperationsManagementSystem.Models.RepairOrder>
+
+<h2>Admin - Repair Orders</h2>
+
+<p>
+    <a asp-action="Create">Create New Repair Order</a>
+</p>
+
+<ul>
+    @foreach (var order in Model)
+    {
+        <li>
+            #@order.Id -
+            Code: @order.IssueCode -
+            CarId: @order.CarId -
+            Status: @(order.IsCompleted ? "Done" : "In Progress")
+            |
+            <a asp-action="Details" asp-route-id="@order.Id">Details</a>
+            <a asp-action="Edit" asp-route-id="@order.Id">Edit</a>
+            <a asp-action="Delete" asp-route-id="@order.Id">Delete</a>
+        </li>
+    }
+</ul>

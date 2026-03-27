@@ -1,0 +1,20 @@
+﻿@model GarageOperationsManagementSystem.Models.RepairOrder
+
+<h2>Repair Order Details</h2>
+
+<ul>
+    <li>Id: @Model.Id</li>
+    <li>Issue Code: @Model.IssueCode</li>
+    <li>Issue Description: @Model.IssueDescription</li>
+    <li>Arrival Date: @Model.ArrivalDate</li>
+    <li>Completion Date: @Model.CompletionDate</li>
+    <li>Completed: @(Model.IsCompleted ? "Yes" : "No")</li>
+    <li>Repair Price: @Model.RepairPrice</li>
+    <li>Car Id: @Model.CarId</li>
+    <li>Garage Id: @Model.GarageId</li>
+</ul>
+
+<p>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</p>
