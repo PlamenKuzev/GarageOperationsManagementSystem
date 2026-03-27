@@ -19,7 +19,7 @@ namespace GarageOperationsManagementSystem.Seed
                 }
             }
 
-            var adminName = "Admin";
+            //var adminName = "Admin";
             var adminEmail = "admin@garage.com";
             var adminPassword = "Admin123!";
 
@@ -27,7 +27,7 @@ namespace GarageOperationsManagementSystem.Seed
             {
                 var admin = new ApplicationUser()
                 {
-                    UserName = adminName,
+                    UserName = adminEmail,
                     Email = adminEmail,
                 };
 
