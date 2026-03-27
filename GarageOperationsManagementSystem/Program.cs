@@ -2,18 +2,19 @@ using GarageOperationsManagementSystem.Data;
 using GarageOperationsManagementSystem.Interfaces;
 using GarageOperationsManagementSystem.Models;
 using GarageOperationsManagementSystem.Services.Implementations;
+using GarageOperationsManagementSystem.Seed;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace GarageOperationsManagementSystem
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -32,6 +33,15 @@ namespace GarageOperationsManagementSystem
             builder.Services.AddScoped<IRepairOrderService, RepairOrderService>();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+
+                await RoleSeeder.SeedRolesAsync(roleManager, userManager);
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
