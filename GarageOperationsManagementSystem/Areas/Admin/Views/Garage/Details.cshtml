@@ -1,0 +1,17 @@
+﻿@model GarageOperationsManagementSystem.Models.Garage
+
+<h2>Garage details</h2>
+
+<ul>
+    <li>City: @Model.City</li>
+    <li>Address: @Model.Address</li>
+    <li>Capacity: @Model.Capacity</li>
+    <li>Work schedule: @Model.WorkSchedule</li>
+    <li>Latitude: @Model.Latitude</li>
+    <li>Longitude: @Model.Longitude</li>
+</ul>
+
+<p>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to list</a>
+</p>

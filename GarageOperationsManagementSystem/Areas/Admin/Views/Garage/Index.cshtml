@@ -1,0 +1,20 @@
+﻿@model IEnumerable<GarageOperationsManagementSystem.Models.Garage>
+
+<h2>Admin — Garages</h2>
+
+<p>
+    <a asp-action="Create">Create garage</a>
+</p>
+
+<ul>
+    @foreach (var g in Model)
+    {
+        <li>
+            @g.City — @g.Address
+            |
+            <a asp-action="Details" asp-route-id="@g.Id">Details</a>
+            <a asp-action="Edit" asp-route-id="@g.Id">Edit</a>
+            <a asp-action="Delete" asp-route-id="@g.Id">Delete</a>
+        </li>
+    }
+</ul>

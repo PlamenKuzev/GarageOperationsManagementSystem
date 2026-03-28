@@ -1,0 +1,20 @@
+﻿@model GarageOperationsManagementSystem.Models.Garage
+
+<h2>Delete garage</h2>
+
+@if (TempData["ErrorMessage"] is string err && !string.IsNullOrEmpty(err))
+{
+    <p class="text-danger">@err</p>
+}
+
+<p>Delete this garage?</p>
+<ul>
+    <li>@Model.City — @Model.Address</li>
+    <li>Repair orders: @Model.RepairOrders.Count</li>
+    <li>Employees: @Model.Employees.Count</li>
+</ul>
+
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+</form>
