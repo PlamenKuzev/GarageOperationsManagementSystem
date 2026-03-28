@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace GarageOperationsManagementSystem.Models
 {
@@ -18,7 +18,6 @@ namespace GarageOperationsManagementSystem.Models
 
         public int OwnerId { get; set; }
 
-        [Required]
         public Owner Owner { get; set; } = null!;
 
 

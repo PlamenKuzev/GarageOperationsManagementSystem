@@ -1,9 +1,8 @@
-﻿@model GarageOperationsManagementSystem.Models.Garage
+@model GarageOperationsManagementSystem.Models.Garage
 
-<h2>Edit garage</h2>
+<h2>Create garage</h2>
 
-<form asp-action="Edit" asp-route-id="@Model.Id" method="post">
-    <input type="hidden" asp-for="Id" />
+<form asp-action="Create" method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div class="mb-2">
@@ -37,7 +36,7 @@
         <span asp-validation-for="Longitude" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="submit" class="btn btn-primary">Create</button>
 </form>
 
 <p class="mt-3"><a asp-action="Index">Back to list</a></p>

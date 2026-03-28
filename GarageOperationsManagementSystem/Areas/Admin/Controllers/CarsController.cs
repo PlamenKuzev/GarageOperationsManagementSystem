@@ -1,6 +1,7 @@
-﻿using GarageOperationsManagementSystem.Data;
+using GarageOperationsManagementSystem.Data;
 using GarageOperationsManagementSystem.Interfaces;
 using GarageOperationsManagementSystem.Models;
+using GarageOperationsManagementSystem.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -40,22 +41,37 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
 
         public async Task<IActionResult> Create()
         {
+            if (!await _context.Owners.AnyAsync())
+            {
+                TempData["Message"] = "Add at least one owner (Admin → Owners → Create) before creating a car.";
+            }
+
             await PopulateOwnerSelectAsync();
-            return View();
+            return View(new AdminCarFormViewModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Brand", "Model", "Year", "Mileage", "OwnerId")] Car car)
+        public async Task<IActionResult> Create(AdminCarFormViewModel vm)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                await _carService.CreateCarAsync(car);
-                return RedirectToAction(nameof(Index));
+                await PopulateOwnerSelectAsync(vm.OwnerId);
+                return View(vm);
             }
 
-            await PopulateOwnerSelectAsync(car.OwnerId);
-            return View(car);
+            var car = new Car
+            {
+                Brand = vm.Brand,
+                Model = vm.Model,
+                Year = vm.Year,
+                Mileage = vm.Mileage,
+                OwnerId = vm.OwnerId!.Value,
+                Owner = null!
+            };
+
+            await _carService.CreateCarAsync(car);
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -66,27 +82,48 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            await PopulateOwnerSelectAsync(car.OwnerId);
-            return View(car);
+            var vm = new AdminCarFormViewModel
+            {
+                Id = car.Id,
+                Brand = car.Brand,
+                Model = car.Model,
+                Year = car.Year,
+                Mileage = car.Mileage,
+                OwnerId = car.OwnerId
+            };
+
+            await PopulateOwnerSelectAsync(vm.OwnerId);
+            return View(vm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id", "Brand", "Model", "Year", "Mileage", "OwnerId")] Car car)
+        public async Task<IActionResult> Edit(int id, AdminCarFormViewModel vm)
         {
-            if (id != car.Id)
+            if (id != vm.Id)
             {
                 return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                await _carService.UpdateCarAsync(car);
-                return RedirectToAction(nameof(Index));
+                await PopulateOwnerSelectAsync(vm.OwnerId);
+                return View(vm);
             }
 
-            await PopulateOwnerSelectAsync(car.OwnerId);
-            return View(car);
+            var car = new Car
+            {
+                Id = vm.Id,
+                Brand = vm.Brand,
+                Model = vm.Model,
+                Year = vm.Year,
+                Mileage = vm.Mileage,
+                OwnerId = vm.OwnerId!.Value,
+                Owner = null!
+            };
+
+            await _carService.UpdateCarAsync(car);
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)
@@ -114,7 +151,8 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
                 .OrderBy(o => o.FullName)
                 .ToListAsync();
 
-            ViewData["OwnerId"] = new SelectList(owners, "Id", "FullName", selectedOwnerId);
+            ViewData["OwnerId"] = new SelectList(owners, nameof(Owner.Id), nameof(Owner.FullName), selectedOwnerId);
+            ViewData["OwnerCount"] = owners.Count;
         }
     }
 }

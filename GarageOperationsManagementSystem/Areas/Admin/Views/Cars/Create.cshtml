@@ -1,35 +1,51 @@
-﻿@model GarageOperationsManagementSystem.Models.Car
+@model AdminCarFormViewModel
 
 <h2>Create car</h2>
 
+@if (TempData["Message"] is string msg && !string.IsNullOrEmpty(msg))
+{
+    <p class="alert alert-warning">@msg</p>
+}
+
+@if (ViewBag.OwnerCount is int oc && oc == 0)
+{
+    <p class="alert alert-danger">
+        There are no owners yet. Create an owner first:
+        <a asp-area="Admin" asp-controller="Owners" asp-action="Create">Add owner</a>.
+    </p>
+}
+
 <form asp-action="Create" method="post">
-    <div asp-validation-summary="ModelOnly"></div>
+    <div asp-validation-summary="All" class="text-danger"></div>
 
-    <div>
-        <label asp-for="Brand"></label>
-        <input asp-for="Brand" />
-        <span asp-validation-for="Brand"></span>
+    <div class="mb-2">
+        <label asp-for="Brand" class="form-label"></label>
+        <input asp-for="Brand" class="form-control" />
+        <span asp-validation-for="Brand" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Model"></label>
-        <input asp-for="Model" />
-        <span asp-validation-for="Model"></span>
+    <div class="mb-2">
+        <label asp-for="Model" class="form-label"></label>
+        <input asp-for="Model" class="form-control" />
+        <span asp-validation-for="Model" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Year"></label>
-        <input asp-for="Year" />
+    <div class="mb-2">
+        <label asp-for="Year" class="form-label"></label>
+        <input asp-for="Year" class="form-control" />
+        <span asp-validation-for="Year" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="Mileage"></label>
-        <input asp-for="Mileage" />
+    <div class="mb-2">
+        <label asp-for="Mileage" class="form-label"></label>
+        <input asp-for="Mileage" class="form-control" />
+        <span asp-validation-for="Mileage" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="OwnerId"></label>
-        <select asp-for="OwnerId" asp-items="ViewBag.OwnerId"></select>
-        <span asp-validation-for="OwnerId"></span>
+    <div class="mb-2">
+        <label asp-for="OwnerId" class="form-label"></label>
+        <select asp-for="OwnerId" asp-items="ViewBag.OwnerId" class="form-select"></select>
+        <div class="form-text">Pick the car owner by name (not the owner name as free text). Create the owner under Owners if missing.</div>
+        <span asp-validation-for="OwnerId" class="text-danger"></span>
     </div>
 
-    <button type="submit">Create</button>
+    <button type="submit" class="btn btn-primary">Create</button>
 </form>
 
 <p><a asp-action="Index">Back to list</a></p>

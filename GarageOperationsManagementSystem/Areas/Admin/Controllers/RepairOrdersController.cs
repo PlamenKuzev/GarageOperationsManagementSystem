@@ -1,4 +1,4 @@
-﻿using GarageOperationsManagementSystem.Data;
+using GarageOperationsManagementSystem.Data;
 using GarageOperationsManagementSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -45,24 +45,22 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
 
         public async Task<IActionResult> Create()
         {
-            ViewData["CarId"] = new SelectList(
-                await _context.Cars.Include(c => c.Owner).ToListAsync(),
-                "Id",
-                "Id"
-            );
-            ViewData["GarageId"] = new SelectList(await _context.Garages.ToListAsync(), "Id", "Id");
-            return View();
+            await PopulateRepairOrderSelectsAsync();
+            return View(new RepairOrder { ArrivalDate = DateTime.Now });
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(RepairOrder order)
+        public async Task<IActionResult> Create(
+            [Bind(nameof(RepairOrder.IssueCode), nameof(RepairOrder.IssueDescription), nameof(RepairOrder.ArrivalDate),
+                nameof(RepairOrder.CompletionDate), nameof(RepairOrder.IsCompleted), nameof(RepairOrder.RepairPrice),
+                nameof(RepairOrder.CarId), nameof(RepairOrder.GarageId))]
+            RepairOrder order)
         {
             if (!ModelState.IsValid)
             {
-                ViewData["CarId"] = new SelectList(await _context.Cars.ToListAsync(), "Id", "Id", order.CarId);
-                ViewData["GarageId"] = new SelectList(await _context.Garages.ToListAsync(), "Id", "Id", order.GarageId);
+                await PopulateRepairOrderSelectsAsync(order.CarId, order.GarageId);
                 return View(order);
             }
 
@@ -79,21 +77,24 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            ViewData["CarId"] = new SelectList(await _context.Cars.ToListAsync(), "Id", "Id", order.CarId);
-            ViewData["GarageId"] = new SelectList(await _context.Garages.ToListAsync(), "Id", "Id", order.GarageId);
+            await PopulateRepairOrderSelectsAsync(order.CarId, order.GarageId);
             return View(order);
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, RepairOrder order)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind(nameof(RepairOrder.Id), nameof(RepairOrder.IssueCode), nameof(RepairOrder.IssueDescription),
+                nameof(RepairOrder.ArrivalDate), nameof(RepairOrder.CompletionDate), nameof(RepairOrder.IsCompleted),
+                nameof(RepairOrder.RepairPrice), nameof(RepairOrder.CarId), nameof(RepairOrder.GarageId))]
+            RepairOrder order)
         {
             if (id != order.Id) return BadRequest();
             if (!ModelState.IsValid)
             {
-                ViewData["CarId"] = new SelectList(await _context.Cars.ToListAsync(), "Id", "Id", order.CarId);
-                ViewData["GarageId"] = new SelectList(await _context.Garages.ToListAsync(), "Id", "Id", order.GarageId);
+                await PopulateRepairOrderSelectsAsync(order.CarId, order.GarageId);
                 return View(order);
             }
             _context.Entry(order).State = EntityState.Modified;
@@ -120,6 +121,28 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
             _context.RepairOrders.Remove(order);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task PopulateRepairOrderSelectsAsync(int? selectedCarId = null, int? selectedGarageId = null)
+        {
+            var cars = await _context.Cars
+                .Include(c => c.Owner)
+                .OrderBy(c => c.Brand)
+                .ThenBy(c => c.Model)
+                .ToListAsync();
+
+            var carDisplay = cars
+                .Select(c => new { c.Id, Label = $"{c.Brand} {c.Model} (Owner: {c.Owner?.FullName ?? "—"})" })
+                .ToList();
+
+            ViewData["CarId"] = new SelectList(carDisplay, nameof(Car.Id), "Label", selectedCarId);
+
+            var garages = await _context.Garages.OrderBy(g => g.City).ThenBy(g => g.Address).ToListAsync();
+            var garageDisplay = garages
+                .Select(g => new { g.Id, Label = $"{g.City} — {g.Address}" })
+                .ToList();
+
+            ViewData["GarageId"] = new SelectList(garageDisplay, nameof(Garage.Id), "Label", selectedGarageId);
         }
     }
 }

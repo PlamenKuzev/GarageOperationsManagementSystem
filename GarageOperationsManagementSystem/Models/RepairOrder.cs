@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace GarageOperationsManagementSystem.Models
 {
@@ -22,12 +23,12 @@ namespace GarageOperationsManagementSystem.Models
 
         public int CarId { get; set; }
 
-        [Required]
+        [ValidateNever]
         public Car Car { get; set; } = null!;
 
         public int GarageId { get; set; }
 
-        [Required]
+        [ValidateNever]
         public Garage Garage { get; set; } = null!;
 
     }
