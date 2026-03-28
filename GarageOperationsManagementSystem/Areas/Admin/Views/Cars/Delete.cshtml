@@ -1,0 +1,15 @@
+﻿@model GarageOperationsManagementSystem.Models.Car
+
+<h2>Delete car</h2>
+
+<p>Delete this car?</p>
+<ul>
+    <li>@Model.Brand @Model.Model</li>
+    <li>Owner: @(Model.Owner?.FullName)</li>
+</ul>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit">Delete</button>
+    <a asp-action="Index">Cancel</a>
+</form>

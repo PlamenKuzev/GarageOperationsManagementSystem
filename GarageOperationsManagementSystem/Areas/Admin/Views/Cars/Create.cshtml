@@ -1,0 +1,39 @@
+﻿@model GarageOperationsManagementSystem.Models.Car
+
+<h2>Create car</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <div>
+        <label asp-for="Brand"></label>
+        <input asp-for="Brand" />
+        <span asp-validation-for="Brand"></span>
+    </div>
+    <div>
+        <label asp-for="Model"></label>
+        <input asp-for="Model" />
+        <span asp-validation-for="Model"></span>
+    </div>
+    <div>
+        <label asp-for="Year"></label>
+        <input asp-for="Year" />
+    </div>
+    <div>
+        <label asp-for="Mileage"></label>
+        <input asp-for="Mileage" />
+    </div>
+    <div>
+        <label asp-for="OwnerId"></label>
+        <select asp-for="OwnerId" asp-items="ViewBag.OwnerId"></select>
+        <span asp-validation-for="OwnerId"></span>
+    </div>
+
+    <button type="submit">Create</button>
+</form>
+
+<p><a asp-action="Index">Back to list</a></p>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

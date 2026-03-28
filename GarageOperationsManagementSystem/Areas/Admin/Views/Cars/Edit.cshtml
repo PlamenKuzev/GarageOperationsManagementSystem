@@ -1,0 +1,37 @@
+﻿@model GarageOperationsManagementSystem.Models.Car
+
+<h2>Edit car</h2>
+
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <div>
+        <label asp-for="Brand"></label>
+        <input asp-for="Brand" />
+    </div>
+    <div>
+        <label asp-for="Model"></label>
+        <input asp-for="Model" />
+    </div>
+    <div>
+        <label asp-for="Year"></label>
+        <input asp-for="Year" />
+    </div>
+    <div>
+        <label asp-for="Mileage"></label>
+        <input asp-for="Mileage" />
+    </div>
+    <div>
+        <label asp-for="OwnerId"></label>
+        <select asp-for="OwnerId" asp-items="ViewBag.OwnerId"></select>
+    </div>
+
+    <button type="submit">Save</button>
+</form>
+
+<p><a asp-action="Index">Back to list</a></p>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,11 +1,21 @@
 ﻿@model IEnumerable<GarageOperationsManagementSystem.Models.Car>
 
-<h2>Admin - Cars </h2>
+<h2>Admin - Cars</h2>
+
+<p>
+    <a asp-action="Create">Create car</a>
+</p>
 
 <ul>
-@foreach (var car in Model)
+    @foreach (var car in Model)
     {
-        <li>@car.Brand - @car.Model</li>
-    }    
-
+        <li>
+            @car.Brand @car.Model
+            (Owner: @(car.Owner?.FullName ?? "—"))
+            |
+            <a asp-action="Details" asp-route-id="@car.Id">Details</a>
+            <a asp-action="Edit" asp-route-id="@car.Id">Edit</a>
+            <a asp-action="Delete" asp-route-id="@car.Id">Delete</a>
+        </li>
+    }
 </ul>
