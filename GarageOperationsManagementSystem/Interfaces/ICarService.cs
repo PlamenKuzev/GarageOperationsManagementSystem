@@ -11,5 +11,7 @@ namespace GarageOperationsManagementSystem.Interfaces
         Task CreateCarAsync(Car car);
 
         Task DeleteCarAsync(int Id);
+
+        Task UpdateCarAsync(Car car);
     }
 }

@@ -47,5 +47,12 @@ namespace GarageOperationsManagementSystem.Services.Implementations
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task UpdateCarAsync(Car car)
+        {
+            _context.Cars.Update(car);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }
