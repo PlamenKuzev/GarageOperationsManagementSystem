@@ -1,4 +1,4 @@
-﻿using GarageOperationsManagementSystem.Data;
+using GarageOperationsManagementSystem.Data;
 using GarageOperationsManagementSystem.Interfaces;
 using GarageOperationsManagementSystem.Models;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +29,22 @@ namespace GarageOperationsManagementSystem.Services.Implementations
                 .Include(r => r.Car)
                 .ThenInclude(c => c.Owner)
                 .FirstOrDefaultAsync(r => r.Id == id);
+        }
+
+        public async Task<RepairOrder?> GetOrderByIssueCodeAsync(string issueCode)
+        {
+            if (string.IsNullOrWhiteSpace(issueCode))
+            {
+                return null;
+            }
+
+            var normalized = issueCode.Trim();
+
+            return await _context.RepairOrders
+                .Include(r => r.Garage)
+                .Include(r => r.Car)
+                .ThenInclude(c => c.Owner)
+                .FirstOrDefaultAsync(r => r.IssueCode == normalized);
         }
 
         public async Task CreateOrderAsync(RepairOrder order)
