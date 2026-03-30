@@ -6,7 +6,7 @@ namespace GarageOperationsManagementSystem.Interfaces
     {
         Task<IEnumerable<RepairOrder>> GetAllOrdersAsync();
 
-        Task<RepairOrder> GetOrderByIdAsync(int Id);
+        Task<RepairOrder?> GetOrderByIdAsync(int Id);
 
         Task<RepairOrder?> GetOrderByIssueCodeAsync(string issueCode);
 

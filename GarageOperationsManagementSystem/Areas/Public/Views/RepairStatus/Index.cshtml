@@ -1,0 +1,83 @@
+@model GarageOperationsManagementSystem.ViewModels.Public.RepairStatusLookupViewModel
+
+@{
+    ViewData["Title"] = "Track repair status";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="mb-4">
+            <h1 class="display-6">Track your repair</h1>
+            <p class="text-muted mb-0">Enter the issue code you received to check the current status.</p>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form asp-area="Public" asp-controller="RepairStatus" asp-action="Index" method="post" class="row g-3">
+                    <div class="col-12">
+                        <label asp-for="IssueCode" class="form-label"></label>
+                        <input asp-for="IssueCode" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="IssueCode" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Check status</button>
+                        <a class="btn btn-outline-secondary" asp-area="" asp-controller="Garages" asp-action="MapView">Find a garage</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @if (Model.NotFound)
+        {
+            <div class="alert alert-warning mt-4" role="alert">
+                No repair order was found for that code. Please check the code and try again.
+            </div>
+        }
+        else if (Model.Result is not null)
+        {
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Issue code:</strong> @Model.Result.IssueCode
+                    </div>
+                    @if (Model.Result.IsCompleted)
+                    {
+                        <span class="badge bg-success">Completed</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">In progress</span>
+                    }
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Car</dt>
+                        <dd class="col-sm-8">@Model.Result.CarSummary</dd>
+
+                        <dt class="col-sm-4">Garage</dt>
+                        <dd class="col-sm-8">@Model.Result.GarageCity @Model.Result.GarageAddress</dd>
+
+                        <dt class="col-sm-4">Arrived</dt>
+                        <dd class="col-sm-8">@Model.Result.ArrivalDate.ToString("yyyy-MM-dd HH:mm")</dd>
+
+                        <dt class="col-sm-4">Completed</dt>
+                        <dd class="col-sm-8">
+                            @(Model.Result.CompletionDate?.ToString("yyyy-MM-dd HH:mm") ?? "Not completed yet")
+                        </dd>
+
+                        <dt class="col-sm-4">Price</dt>
+                        <dd class="col-sm-8">
+                            @(Model.Result.RepairPrice.HasValue ? $"{Model.Result.RepairPrice.Value:F2} BGN" : "—")
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

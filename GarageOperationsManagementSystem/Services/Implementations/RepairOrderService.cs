@@ -23,7 +23,7 @@ namespace GarageOperationsManagementSystem.Services.Implementations
                 .ToListAsync();
         }
 
-        public async Task<RepairOrder> GetOrderByIdAsync(int id)
+        public async Task<RepairOrder?> GetOrderByIdAsync(int id)
         {
             return await _context.RepairOrders
                 .Include(r => r.Car)

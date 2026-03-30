@@ -1,4 +1,4 @@
-﻿using GarageOperationsManagementSystem.Models;
+using GarageOperationsManagementSystem.Models;
 
 namespace GarageOperationsManagementSystem.Interfaces
 {
@@ -6,7 +6,7 @@ namespace GarageOperationsManagementSystem.Interfaces
     {
         Task<IEnumerable<Car>> GetAllCarsAsync();
 
-        Task<Car> GetCarByIdAsync(int Id);
+        Task<Car?> GetCarByIdAsync(int Id);
 
         Task CreateCarAsync(Car car);
 

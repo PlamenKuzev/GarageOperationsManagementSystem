@@ -1,4 +1,4 @@
-﻿using GarageOperationsManagementSystem.Data;
+using GarageOperationsManagementSystem.Data;
 using GarageOperationsManagementSystem.Interfaces;
 using GarageOperationsManagementSystem.Models;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +24,7 @@ namespace GarageOperationsManagementSystem.Services.Implementations
                 .ToListAsync();
         }
 
-        public async Task<Car> GetCarByIdAsync(int id)
+        public async Task<Car?> GetCarByIdAsync(int id)
         {
             return await _context.Cars
                 .Include(c => c.Owner)

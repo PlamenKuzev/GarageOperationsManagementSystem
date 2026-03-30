@@ -39,8 +39,10 @@ namespace GarageOperationsManagementSystem
                 var services = scope.ServiceProvider;
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                var dbContext = services.GetRequiredService<ApplicationDbContext>();
 
                 await RoleSeeder.SeedRolesAsync(roleManager, userManager);
+                await DbSeeder.SeedDemoRepairOrdersAsync(dbContext);
             }
 
             // Configure the HTTP request pipeline.
