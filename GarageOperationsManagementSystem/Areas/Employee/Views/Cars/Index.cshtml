@@ -1,0 +1,26 @@
+@model IEnumerable<GarageOperationsManagementSystem.Models.Car>
+
+@{
+    ViewData["Title"] = "Cars";
+}
+
+<h2 class="mb-3">Employee — Cars</h2>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Create car</a>
+</p>
+
+<ul class="list-unstyled">
+    @foreach (var car in Model)
+    {
+        <li class="mb-2 border-bottom pb-2">
+            <strong>@car.Brand @car.Model</strong>
+            (Owner: @(car.Owner?.FullName ?? "—"))
+            <span class="ms-2">
+                <a asp-action="Details" asp-route-id="@car.Id">Details</a> |
+                <a asp-action="Edit" asp-route-id="@car.Id">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@car.Id">Delete</a>
+            </span>
+        </li>
+    }
+</ul>

@@ -34,6 +34,22 @@ namespace GarageOperationsManagementSystem.Seed
                 await userManager.CreateAsync(admin, adminPassword);
                 await userManager.AddToRoleAsync(admin, "Admin");
             }
+
+            var employeeEmail = "employee@garage.com";
+            var employeePassword = "Employee123!";
+
+            if (await userManager.FindByEmailAsync(employeeEmail) == null)
+            {
+                var employee = new ApplicationUser()
+                {
+                    UserName = employeeEmail,
+                    Email = employeeEmail,
+                };
+
+                await userManager.CreateAsync(employee, employeePassword);
+                await userManager.AddToRoleAsync(employee, "Employee");
+            }
+
         }
 
 

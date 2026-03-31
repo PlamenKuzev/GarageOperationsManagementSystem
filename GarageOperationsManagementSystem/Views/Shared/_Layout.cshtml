@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -30,6 +30,14 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="Admin" asp-controller="Home" asp-action="Index">
                                     Admin
+                                </a>
+                            </li>
+                        }
+                        @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Employee"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Employee" asp-controller="Home" asp-action="Index">
+                                    Employee
                                 </a>
                             </li>
                         }

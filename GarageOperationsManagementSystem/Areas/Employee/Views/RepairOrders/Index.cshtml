@@ -1,11 +1,36 @@
-﻿@model IEnumerable<GarageOperationsManagementSystem.Models.RepairOrder>
+@model IEnumerable<GarageOperationsManagementSystem.Models.RepairOrder>
 
-<h2>Employee - Repair Orders </h2>
+@{
+    ViewData["Title"] = "Repair orders";
+}
 
-<ul> 
-@foreach (var order in Model)
+<h2 class="mb-3">Employee — Repair orders</h2>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Create repair order</a>
+</p>
+
+<ul class="list-unstyled">
+    @foreach (var order in Model)
     {
-        <li>@order.IssueCode - @(order.IsCompleted ? "Done" : "In Progress") </li>
+        <li class="mb-2 border-bottom pb-2">
+            <strong>#@order.Id</strong>
+            — Code: <code>@order.IssueCode</code>
+            — @(order.IsCompleted ? "Done" : "In progress")
+            @if (order.Garage != null)
+            {
+                <span class="text-muted">(@order.Garage.City)</span>
+            }
+            <span class="ms-2">
+                <a asp-action="Details" asp-route-id="@order.Id">Details</a> |
+                <a asp-action="Edit" asp-route-id="@order.Id">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@order.Id">Delete</a>
+            </span>
+        </li>
     }
-
 </ul>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">No repair orders yet.</p>
+}

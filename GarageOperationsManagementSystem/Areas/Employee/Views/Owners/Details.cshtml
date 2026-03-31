@@ -1,0 +1,19 @@
+@model GarageOperationsManagementSystem.Models.Owner
+
+@{
+    ViewData["Title"] = "Owner details";
+}
+
+<h2 class="mb-3">Owner details</h2>
+
+<ul>
+    <li>Name: @Model.FullName</li>
+    <li>Phone: @Model.PhoneNumber</li>
+    <li>Email: @Model.Email</li>
+    <li>Cars: @(Model.Cars?.Count ?? 0)</li>
+</ul>
+
+<p>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to list</a>
+</p>

@@ -1,0 +1,21 @@
+@model GarageOperationsManagementSystem.Models.Car
+
+@{
+    ViewData["Title"] = "Car details";
+}
+
+<h2 class="mb-3">Car details</h2>
+
+<ul>
+    <li>Brand: @Model.Brand</li>
+    <li>Model: @Model.Model</li>
+    <li>Year: @Model.Year</li>
+    <li>Mileage: @Model.Mileage</li>
+    <li>Owner: @Model.Owner?.FullName</li>
+    <li>Owner email: @Model.Owner?.Email</li>
+</ul>
+
+<p>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to list</a>
+</p>

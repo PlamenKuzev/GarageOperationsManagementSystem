@@ -1,0 +1,24 @@
+@model GarageOperationsManagementSystem.Models.Owner
+
+@{
+    ViewData["Title"] = "Delete owner";
+}
+
+<h2 class="mb-3">Delete owner</h2>
+
+@if (TempData["ErrorMessage"] is string err && !string.IsNullOrEmpty(err))
+{
+    <p class="text-danger">@err</p>
+}
+
+<p>Delete this owner?</p>
+<ul>
+    <li>@Model.FullName</li>
+    <li>@Model.Email</li>
+    <li>Cars: @(Model.Cars?.Count ?? 0)</li>
+</ul>
+
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+</form>

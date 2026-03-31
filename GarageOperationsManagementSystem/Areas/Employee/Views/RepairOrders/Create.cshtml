@@ -1,0 +1,68 @@
+@model GarageOperationsManagementSystem.Models.RepairOrder
+
+@{
+    ViewData["Title"] = "Create repair order";
+}
+
+<h2 class="mb-3">Create repair order</h2>
+
+<p class="text-muted small">Leave issue code empty to generate one automatically.</p>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="mb-2">
+        <label asp-for="IssueCode" class="form-label"></label>
+        <input asp-for="IssueCode" class="form-control" placeholder="Optional — auto-generated if empty" />
+        <span asp-validation-for="IssueCode" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label asp-for="IssueDescription" class="form-label"></label>
+        <input asp-for="IssueDescription" class="form-control" />
+        <span asp-validation-for="IssueDescription" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label asp-for="ArrivalDate" class="form-label"></label>
+        <input asp-for="ArrivalDate" class="form-control" type="datetime-local" />
+        <span asp-validation-for="ArrivalDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label asp-for="CompletionDate" class="form-label"></label>
+        <input asp-for="CompletionDate" class="form-control" type="datetime-local" />
+        <span asp-validation-for="CompletionDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2 form-check">
+        <input asp-for="IsCompleted" class="form-check-input" />
+        <label asp-for="IsCompleted" class="form-check-label"></label>
+    </div>
+
+    <div class="mb-2">
+        <label asp-for="RepairPrice" class="form-label"></label>
+        <input asp-for="RepairPrice" class="form-control" />
+        <span asp-validation-for="RepairPrice" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label asp-for="CarId" class="form-label"></label>
+        <select asp-for="CarId" asp-items="ViewBag.CarId" class="form-select"></select>
+        <span asp-validation-for="CarId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label asp-for="GarageId" class="form-label"></label>
+        <select asp-for="GarageId" asp-items="ViewBag.GarageId" class="form-select"></select>
+        <span asp-validation-for="GarageId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+
+<p class="mt-3"><a asp-action="Index">Back to list</a></p>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
