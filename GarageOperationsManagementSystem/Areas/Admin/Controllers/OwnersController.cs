@@ -1,4 +1,4 @@
-﻿using GarageOperationsManagementSystem.Data;
+using GarageOperationsManagementSystem.Interfaces;
 using GarageOperationsManagementSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,30 +10,22 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
     [Authorize(Roles = "Admin")]
     public class OwnersController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IOwnerService _ownerService;
 
-        public OwnersController(ApplicationDbContext context)
+        public OwnersController(IOwnerService ownerService)
         {
-            _context = context;
+            _ownerService = ownerService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var owners = await _context.Owners
-                .AsNoTracking()
-                .OrderBy(o => o.FullName)
-                .ToListAsync();
-
+            var owners = await _ownerService.GetAllAsync();
             return View(owners);
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            var owner = await _context.Owners
-                .AsNoTracking()
-                .Include(o => o.Cars)
-                .FirstOrDefaultAsync(o => o.Id == id);
-
+            var owner = await _ownerService.GetByIdWithCarsAsync(id);
             if (owner == null)
             {
                 return NotFound();
@@ -53,8 +45,7 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(owner);
-                await _context.SaveChangesAsync();
+                await _ownerService.CreateAsync(owner);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -63,7 +54,7 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var owner = await _context.Owners.FindAsync(id);
+            var owner = await _ownerService.GetByIdAsync(id);
             if (owner == null)
             {
                 return NotFound();
@@ -85,12 +76,11 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
             {
                 try
                 {
-                    _context.Update(owner);
-                    await _context.SaveChangesAsync();
+                    await _ownerService.UpdateAsync(owner);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await OwnerExistsAsync(owner.Id))
+                    if (!await _ownerService.ExistsAsync(owner.Id))
                     {
                         return NotFound();
                     }
@@ -106,11 +96,7 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var owner = await _context.Owners
-                .AsNoTracking()
-                .Include(o => o.Cars)
-                .FirstOrDefaultAsync(o => o.Id == id);
-
+            var owner = await _ownerService.GetByIdWithCarsAsync(id);
             if (owner == null)
             {
                 return NotFound();
@@ -123,29 +109,19 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var owner = await _context.Owners
-                .Include(o => o.Cars)
-                .FirstOrDefaultAsync(o => o.Id == id);
-
-            if (owner == null)
+            if (!await _ownerService.ExistsAsync(id))
             {
                 return RedirectToAction(nameof(Index));
             }
 
-            if (owner.Cars.Count > 0)
+            if (await _ownerService.HasCarsAsync(id))
             {
                 TempData["ErrorMessage"] = "Cannot delete an owner who still has cars. Remove or reassign cars first.";
                 return RedirectToAction(nameof(Delete), new { id });
             }
 
-            _context.Owners.Remove(owner);
-            await _context.SaveChangesAsync();
+            await _ownerService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private Task<bool> OwnerExistsAsync(int id)
-        {
-            return _context.Owners.AnyAsync(e => e.Id == id);
         }
     }
 }
