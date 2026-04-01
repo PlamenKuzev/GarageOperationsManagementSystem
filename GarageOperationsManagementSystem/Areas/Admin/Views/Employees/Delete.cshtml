@@ -1,0 +1,50 @@
+@model GarageOperationsManagementSystem.Models.Employee
+
+@{
+    ViewData["Title"] = "Delete Employee";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <h2 class="mb-4 text-danger">Delete Employee</h2>
+
+        <div class="card border-danger mb-4">
+            <div class="card-header bg-danger text-white">
+                <strong>You are about to permanently delete this employee record.</strong>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Name</dt>
+                    <dd class="col-sm-8">@Model.Name</dd>
+
+                    <dt class="col-sm-4">Position</dt>
+                    <dd class="col-sm-8">@Model.Position</dd>
+
+                    <dt class="col-sm-4">Garage</dt>
+                    <dd class="col-sm-8">@(Model.Garage?.City ?? "—")</dd>
+
+                    <dt class="col-sm-4">Working Since</dt>
+                    <dd class="col-sm-8">@Model.WorkingSince.ToString("dd MMM yyyy")</dd>
+                </dl>
+            </div>
+        </div>
+
+        @if (Model.ApplicationUserId != null)
+        {
+            <div class="alert alert-warning">
+                <strong>Warning:</strong> This employee has a linked login account
+                (@(Model.ApplicationUser?.Email ?? "unknown email")).
+                Deleting this record will also <strong>permanently delete that account</strong>.
+                The user will no longer be able to log in.
+            </div>
+        }
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
