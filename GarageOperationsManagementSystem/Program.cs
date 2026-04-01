@@ -31,6 +31,7 @@ namespace GarageOperationsManagementSystem
             builder.Services.AddScoped<IGarageService, GarageService>();
             builder.Services.AddScoped<ICarService, CarService>();
             builder.Services.AddScoped<IRepairOrderService, RepairOrderService>();
+            builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
             var app = builder.Build();
 
