@@ -1,5 +1,7 @@
-﻿using GarageOperationsManagementSystem.Models;
+using GarageOperationsManagementSystem.Data;
+using GarageOperationsManagementSystem.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace GarageOperationsManagementSystem.Seed
 {
@@ -7,7 +9,8 @@ namespace GarageOperationsManagementSystem.Seed
     {
         public static async Task SeedRolesAsync(
             RoleManager<IdentityRole> roleManager,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            ApplicationDbContext dbContext)
         {
             string[] roles = { "Admin", "Employee", "Guest" };
 
@@ -19,16 +22,17 @@ namespace GarageOperationsManagementSystem.Seed
                 }
             }
 
-            //var adminName = "Admin";
             var adminEmail = "admin@garage.com";
             var adminPassword = "Admin123!";
 
             if (await userManager.FindByEmailAsync(adminEmail) == null)
             {
-                var admin = new ApplicationUser()
+                var admin = new ApplicationUser
                 {
                     UserName = adminEmail,
                     Email = adminEmail,
+                    FullName = "System Administrator",
+                    EmailConfirmed = true
                 };
 
                 await userManager.CreateAsync(admin, adminPassword);
@@ -38,20 +42,43 @@ namespace GarageOperationsManagementSystem.Seed
             var employeeEmail = "employee@garage.com";
             var employeePassword = "Employee123!";
 
-            if (await userManager.FindByEmailAsync(employeeEmail) == null)
+            ApplicationUser? empUser = await userManager.FindByEmailAsync(employeeEmail);
+            if (empUser == null)
             {
-                var employee = new ApplicationUser()
+                empUser = new ApplicationUser
                 {
                     UserName = employeeEmail,
                     Email = employeeEmail,
+                    FullName = "Demo Employee",
+                    EmailConfirmed = true
                 };
 
-                await userManager.CreateAsync(employee, employeePassword);
-                await userManager.AddToRoleAsync(employee, "Employee");
+                await userManager.CreateAsync(empUser, employeePassword);
+                await userManager.AddToRoleAsync(empUser, "Employee");
             }
 
+            // Link the demo employee user to an Employee record if not already linked
+            var hasRecord = await dbContext.Employees
+                .AnyAsync(e => e.ApplicationUserId == empUser.Id);
+
+            if (!hasRecord)
+            {
+                var firstGarage = await dbContext.Garages.FirstOrDefaultAsync();
+                if (firstGarage != null)
+                {
+                    dbContext.Employees.Add(new Employee
+                    {
+                        Name = "Demo Employee",
+                        Position = "Mechanic",
+                        Salary = 2000m,
+                        WorkingSince = DateTime.Now.AddYears(-2),
+                        GarageId = firstGarage.Id,
+                        ApplicationUserId = empUser.Id,
+                        IsTrusted = false
+                    });
+                    await dbContext.SaveChangesAsync();
+                }
+            }
         }
-
-
     }
 }

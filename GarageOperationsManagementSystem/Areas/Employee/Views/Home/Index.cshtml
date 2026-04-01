@@ -1,17 +1,59 @@
+@model GarageOperationsManagementSystem.Models.Employee?
+
 @{
     ViewData["Title"] = "Employee workspace";
+    var emp = Model;
 }
 
-<div class="mb-4">
-    <h1 class="display-6">Employee workspace</h1>
-    <p class="text-muted mb-0">Manage repair orders, cars, and owners.</p>
-</div>
+@* Profile card *@
+@if (emp != null)
+{
+    <div class="card mb-4 shadow-sm" style="border-left: 4px solid #0d6efd;">
+        <div class="card-body">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <div>
+                    <h2 class="h4 mb-0">@emp.Name</h2>
+                    <span class="badge @(emp.IsTrusted ? "bg-success" : "bg-secondary") mt-1">@emp.Position</span>
+                </div>
+            </div>
+            <dl class="row mb-0 mt-2">
+                <dt class="col-sm-3">Garage</dt>
+                <dd class="col-sm-9">@emp.Garage?.City — @emp.Garage?.Address</dd>
 
+                <dt class="col-sm-3">Monthly Salary</dt>
+                <dd class="col-sm-9">@emp.Salary.ToString("C0")</dd>
+
+                <dt class="col-sm-3">Working Since</dt>
+                <dd class="col-sm-9">@emp.WorkingSince.ToString("dd MMM yyyy")</dd>
+
+                <dt class="col-sm-3">Access Level</dt>
+                <dd class="col-sm-9">
+                    @if (emp.IsTrusted)
+                    {
+                        <span class="text-success fw-semibold">Trusted — full access</span>
+                    }
+                    else
+                    {
+                        <span class="text-secondary">Junior — view &amp; create only (own garage)</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info mb-4">
+        Your employee profile has not been linked yet. Please contact an administrator.
+    </div>
+}
+
+<h5 class="text-muted mb-3">Quick Actions</h5>
 <div class="row g-3">
     <div class="col-md-4">
         <div class="card h-100 shadow-sm">
             <div class="card-body">
-                <h2 class="h5 card-title">Repair orders</h2>
+                <h2 class="h5 card-title">Repair Orders</h2>
                 <p class="card-text text-muted small">Create, update, complete, delete repair orders.</p>
                 <a class="btn btn-primary" asp-area="Employee" asp-controller="RepairOrders" asp-action="Index">Open</a>
             </div>
