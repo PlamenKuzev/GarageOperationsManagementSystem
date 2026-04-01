@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GarageOperationsManagementSystem.Models
 {
@@ -20,5 +21,12 @@ namespace GarageOperationsManagementSystem.Models
 
         [Required]
         public Garage Garage { get; set; } = null!;
+
+        public string? ApplicationUserId { get; set; }
+
+        [ForeignKey(nameof(ApplicationUserId))]
+        public ApplicationUser? ApplicationUser { get; set; }
+
+        public bool IsTrusted { get; set; }
     }
 }
