@@ -1,3 +1,4 @@
+using GarageOperationsManagementSystem.Helpers;
 using GarageOperationsManagementSystem.Interfaces;
 using GarageOperationsManagementSystem.ViewModels.Admin;
 using EmployeeModel = GarageOperationsManagementSystem.Models.Employee;
@@ -28,10 +29,23 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
         }
 
         // GET: Admin/Employees
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchString, int pageNumber = 1)
         {
+            const int pageSize = 10;
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["SearchPlaceholder"] = "Search by name or position…";
+
             var employees = await _employeeService.GetAllAsync();
-            var viewModels = employees.Select(e => new EmployeeIndexViewModel
+            IEnumerable<EmployeeModel> filtered = employees;
+            if (!string.IsNullOrWhiteSpace(searchString))
+            {
+                var lower = searchString.Trim().ToLower();
+                filtered = employees.Where(e =>
+                    e.Name.ToLower().Contains(lower) ||
+                    e.Position.ToLower().Contains(lower));
+            }
+
+            var viewModels = filtered.Select(e => new EmployeeIndexViewModel
             {
                 Id = e.Id,
                 Name = e.Name,
@@ -41,8 +55,15 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
                 GarageName = e.Garage?.City ?? "—",
                 IsTrusted = e.IsTrusted,
                 LinkedEmail = e.ApplicationUser?.Email
-            });
-            return View(viewModels);
+            }).AsQueryable();
+
+            var paged = await PaginatedList<EmployeeIndexViewModel>.CreateAsync(viewModels, pageNumber, pageSize);
+            ViewData["PageIndex"] = paged.PageIndex;
+            ViewData["TotalPages"] = paged.TotalPages;
+            ViewData["HasPreviousPage"] = paged.HasPreviousPage;
+            ViewData["HasNextPage"] = paged.HasNextPage;
+
+            return View(paged);
         }
 
         // GET: Admin/Employees/Create

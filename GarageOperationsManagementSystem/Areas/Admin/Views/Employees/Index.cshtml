@@ -1,19 +1,22 @@
-@model IEnumerable<GarageOperationsManagementSystem.ViewModels.Admin.EmployeeIndexViewModel>
+@model PaginatedList<GarageOperationsManagementSystem.ViewModels.Admin.EmployeeIndexViewModel>
 
 @{
     ViewData["Title"] = "Employees";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">Employees</h2>
-    <a asp-action="Create" class="btn btn-primary">
-        <i class="bi bi-person-plus"></i> Add Employee
-    </a>
+<div class="mb-4">
+    <h1 class="h3">Employees</h1>
+    <p class="text-muted mb-0">All staff members and their linked accounts.</p>
+</div>
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <partial name="_SearchFormPartial" />
+    <a asp-action="Create" class="btn btn-primary">Add employee</a>
 </div>
 
 @if (!Model.Any())
 {
-    <div class="alert alert-info">No employees found. Use the button above to add the first one.</div>
+    <div class="alert alert-info">No employees found.</div>
 }
 else
 {
@@ -26,7 +29,7 @@ else
                     <th>Garage</th>
                     <th>Salary</th>
                     <th>Working Since</th>
-                    <th>Status</th>
+                    <th>Access</th>
                     <th>Account</th>
                     <th class="text-end">Actions</th>
                 </tr>
@@ -53,16 +56,14 @@ else
                         <td>
                             @if (emp.LinkedEmail != null)
                             {
-                                <span class="badge bg-primary">
-                                    <i class="bi bi-link-45deg"></i> @emp.LinkedEmail
-                                </span>
+                                <span class="badge bg-primary">@emp.LinkedEmail</span>
                             }
                             else
                             {
                                 <span class="badge bg-warning text-dark">No account</span>
                             }
                         </td>
-                        <td class="text-end">
+                        <td class="text-end text-nowrap">
                             <a asp-action="Edit" asp-route-id="@emp.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
                             <a asp-action="Delete" asp-route-id="@emp.Id" class="btn btn-sm btn-outline-danger">Delete</a>
                         </td>
@@ -72,3 +73,5 @@ else
         </table>
     </div>
 }
+
+<partial name="_PaginationPartial" />
