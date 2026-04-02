@@ -1,4 +1,5 @@
 ﻿using GarageOperationsManagementSystem.Data;
+using GarageOperationsManagementSystem.Helpers;
 using GarageOperationsManagementSystem.Interfaces;
 using GarageOperationsManagementSystem.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -20,10 +21,28 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchString, int pageNumber = 1)
         {
-            var garages = await _garageService.GetAllGaragesAsync();
-            return View(garages.OrderBy(g => g.City).ToList());
+            const int pageSize = 10;
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["SearchPlaceholder"] = "Search by city or address…";
+
+            var query = _garageService.GetQueryable().OrderBy(g => g.City);
+
+            IQueryable<Garage> filtered = query;
+            if (!string.IsNullOrWhiteSpace(searchString))
+            {
+                filtered = query.Where(g =>
+                    g.City.Contains(searchString) || g.Address.Contains(searchString));
+            }
+
+            var paged = await PaginatedList<Garage>.CreateAsync(filtered, pageNumber, pageSize);
+            ViewData["PageIndex"] = paged.PageIndex;
+            ViewData["TotalPages"] = paged.TotalPages;
+            ViewData["HasPreviousPage"] = paged.HasPreviousPage;
+            ViewData["HasNextPage"] = paged.HasNextPage;
+
+            return View(paged);
         }
 
         public async Task<IActionResult> Details(int id)

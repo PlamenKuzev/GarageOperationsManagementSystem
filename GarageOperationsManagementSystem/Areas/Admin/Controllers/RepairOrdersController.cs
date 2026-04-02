@@ -1,8 +1,10 @@
+using GarageOperationsManagementSystem.Helpers;
 using GarageOperationsManagementSystem.Interfaces;
 using GarageOperationsManagementSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
 {
@@ -24,10 +26,34 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
             _garageService = garageService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchString, int pageNumber = 1)
         {
-            var orders = await _repairOrderService.GetAllOrdersAsync();
-            return View(orders);
+            const int pageSize = 10;
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["SearchPlaceholder"] = "Search by issue code or status…";
+
+            var query = _repairOrderService.GetQueryable()
+                .Include(r => r.Car).ThenInclude(c => c!.Owner)
+                .Include(r => r.Garage)
+                .OrderByDescending(r => r.ArrivalDate);
+
+            IQueryable<RepairOrder> filtered = query;
+            if (!string.IsNullOrWhiteSpace(searchString))
+            {
+                var lower = searchString.Trim().ToLower();
+                filtered = query.Where(r =>
+                    r.IssueCode.Contains(searchString) ||
+                    (lower == "done" && r.IsCompleted) ||
+                    (lower == "in progress" && !r.IsCompleted));
+            }
+
+            var paged = await PaginatedList<RepairOrder>.CreateAsync(filtered, pageNumber, pageSize);
+            ViewData["PageIndex"] = paged.PageIndex;
+            ViewData["TotalPages"] = paged.TotalPages;
+            ViewData["HasPreviousPage"] = paged.HasPreviousPage;
+            ViewData["HasNextPage"] = paged.HasNextPage;
+
+            return View(paged);
         }
 
         public async Task<IActionResult> Details(int id)

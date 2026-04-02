@@ -1,9 +1,11 @@
+using GarageOperationsManagementSystem.Helpers;
 using GarageOperationsManagementSystem.Interfaces;
 using GarageOperationsManagementSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
 {
@@ -31,10 +33,36 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchString, int pageNumber = 1)
         {
-            var orders = await _repairOrderService.GetAllOrdersAsync();
-            return View(orders);
+            const int pageSize = 10;
+            var (emp, isTrusted) = await GetCurrentEmployeeAsync();
+            ViewData["IsTrusted"] = isTrusted;
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["SearchPlaceholder"] = "Search by issue code…";
+
+            var query = _repairOrderService.GetQueryable()
+                .Include(r => r.Car).ThenInclude(c => c!.Owner)
+                .Include(r => r.Garage)
+                .OrderByDescending(r => r.ArrivalDate);
+
+            IQueryable<RepairOrder> filtered = query;
+            if (!isTrusted && emp != null)
+            {
+                filtered = filtered.Where(r => r.GarageId == emp.GarageId);
+            }
+            if (!string.IsNullOrWhiteSpace(searchString))
+            {
+                filtered = filtered.Where(r => r.IssueCode.Contains(searchString));
+            }
+
+            var paged = await PaginatedList<RepairOrder>.CreateAsync(filtered, pageNumber, pageSize);
+            ViewData["PageIndex"] = paged.PageIndex;
+            ViewData["TotalPages"] = paged.TotalPages;
+            ViewData["HasPreviousPage"] = paged.HasPreviousPage;
+            ViewData["HasNextPage"] = paged.HasNextPage;
+
+            return View(paged);
         }
 
         public async Task<IActionResult> Details(int id)
