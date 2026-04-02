@@ -109,9 +109,13 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var order = await _repairOrderService.GetOrderByIdAsync(id);
-            if (order == null)
+            if (order == null) return NotFound();
+
+            var (emp, isTrusted) = await GetCurrentEmployeeAsync();
+            if (!isTrusted && emp != null && order.GarageId != emp.GarageId)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "You can only edit repair orders belonging to your garage.";
+                return RedirectToAction(nameof(Index));
             }
 
             await PopulateRepairOrderSelectsAsync(order.CarId, order.GarageId);
@@ -127,9 +131,13 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
                 nameof(RepairOrder.RepairPrice), nameof(RepairOrder.CarId), nameof(RepairOrder.GarageId))]
             RepairOrder order)
         {
-            if (id != order.Id)
+            if (id != order.Id) return BadRequest();
+
+            var (emp, isTrusted) = await GetCurrentEmployeeAsync();
+            if (!isTrusted && emp != null && order.GarageId != emp.GarageId)
             {
-                return BadRequest();
+                TempData["ErrorMessage"] = "You can only edit repair orders belonging to your garage.";
+                return RedirectToAction(nameof(Index));
             }
 
             if (!ModelState.IsValid)
@@ -139,15 +147,20 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
             }
 
             await _repairOrderService.UpdateOrderAsync(order);
+            TempData["SuccessMessage"] = "Repair order updated.";
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)
         {
             var order = await _repairOrderService.GetOrderByIdAsync(id);
-            if (order == null)
+            if (order == null) return NotFound();
+
+            var (emp, isTrusted) = await GetCurrentEmployeeAsync();
+            if (!isTrusted && emp != null && order.GarageId != emp.GarageId)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "You can only delete repair orders belonging to your garage.";
+                return RedirectToAction(nameof(Index));
             }
 
             return View(order);
@@ -157,7 +170,18 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var order = await _repairOrderService.GetOrderByIdAsync(id);
+            if (order == null) return NotFound();
+
+            var (emp, isTrusted) = await GetCurrentEmployeeAsync();
+            if (!isTrusted && emp != null && order.GarageId != emp.GarageId)
+            {
+                TempData["ErrorMessage"] = "You can only delete repair orders belonging to your garage.";
+                return RedirectToAction(nameof(Index));
+            }
+
             await _repairOrderService.DeleteOrderAsync(id);
+            TempData["SuccessMessage"] = "Repair order deleted.";
             return RedirectToAction(nameof(Index));
         }
 
