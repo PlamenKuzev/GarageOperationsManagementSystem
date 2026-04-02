@@ -66,5 +66,26 @@ namespace GarageOperationsManagementSystem.Services.Implementations
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task UpdateOrderAsync(RepairOrder order)
+        {
+            _context.Entry(order).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteOrderAsync(int id)
+        {
+            var order = await _context.RepairOrders.FindAsync(id);
+            if (order != null)
+            {
+                _context.RepairOrders.Remove(order);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public IQueryable<RepairOrder> GetQueryable()
+        {
+            return _context.RepairOrders.AsNoTracking();
+        }
     }
 }

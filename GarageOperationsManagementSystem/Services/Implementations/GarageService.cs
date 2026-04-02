@@ -55,5 +55,9 @@ namespace GarageOperationsManagementSystem.Services.Implementations
             }
         }
 
+        public IQueryable<Garage> GetQueryable()
+        {
+            return _context.Garages.AsNoTracking();
+        }
     }
 }

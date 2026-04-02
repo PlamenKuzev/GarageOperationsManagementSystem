@@ -1,9 +1,8 @@
-using GarageOperationsManagementSystem.Data;
+using GarageOperationsManagementSystem.Interfaces;
 using GarageOperationsManagementSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
 {
@@ -11,29 +10,29 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
     [Authorize(Roles = "Admin")]
     public class RepairOrdersController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        public RepairOrdersController(ApplicationDbContext context)
+        private readonly IRepairOrderService _repairOrderService;
+        private readonly ICarService _carService;
+        private readonly IGarageService _garageService;
+
+        public RepairOrdersController(
+            IRepairOrderService repairOrderService,
+            ICarService carService,
+            IGarageService garageService)
         {
-            _context = context;
+            _repairOrderService = repairOrderService;
+            _carService = carService;
+            _garageService = garageService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var orders = await _context.RepairOrders
-                .Include(r => r.Car).ThenInclude(c => c.Owner)
-                .Include(r => r.Garage)
-                .ToListAsync();
-
+            var orders = await _repairOrderService.GetAllOrdersAsync();
             return View(orders);
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            var order = await _context.RepairOrders
-                .Include(r => r.Car).ThenInclude(c => c.Owner)
-                .Include(r => r.Garage)
-                .FirstOrDefaultAsync(r => r.Id == id);
-
+            var order = await _repairOrderService.GetOrderByIdAsync(id);
             if (order == null)
             {
                 return NotFound();
@@ -42,13 +41,11 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
             return View(order);
         }
 
-
         public async Task<IActionResult> Create()
         {
             await PopulateRepairOrderSelectsAsync();
             return View(new RepairOrder { ArrivalDate = DateTime.Now });
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -64,14 +61,13 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
                 return View(order);
             }
 
-            _context.RepairOrders.Add(order);
-            await _context.SaveChangesAsync();
+            await _repairOrderService.CreateOrderAsync(order);
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var order = await _context.RepairOrders.FindAsync(id);
+            var order = await _repairOrderService.GetOrderByIdAsync(id);
             if (order == null)
             {
                 return NotFound();
@@ -80,7 +76,6 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
             await PopulateRepairOrderSelectsAsync(order.CarId, order.GarageId);
             return View(order);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -97,17 +92,14 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
                 await PopulateRepairOrderSelectsAsync(order.CarId, order.GarageId);
                 return View(order);
             }
-            _context.Entry(order).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+
+            await _repairOrderService.UpdateOrderAsync(order);
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var order = await _context.RepairOrders
-                .Include(r => r.Car).ThenInclude(c => c.Owner)
-                .Include(r => r.Garage)
-                .FirstOrDefaultAsync(r => r.Id == id);
+            var order = await _repairOrderService.GetOrderByIdAsync(id);
             if (order == null) return NotFound();
             return View(order);
         }
@@ -116,20 +108,14 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var order = await _context.RepairOrders.FindAsync(id);
-            if (order == null) return NotFound();
-            _context.RepairOrders.Remove(order);
-            await _context.SaveChangesAsync();
+            await _repairOrderService.DeleteOrderAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
         private async Task PopulateRepairOrderSelectsAsync(int? selectedCarId = null, int? selectedGarageId = null)
         {
-            var cars = await _context.Cars
-                .Include(c => c.Owner)
-                .OrderBy(c => c.Brand)
-                .ThenBy(c => c.Model)
-                .ToListAsync();
+            var cars = (await _carService.GetAllCarsAsync())
+                .OrderBy(c => c.Brand).ThenBy(c => c.Model);
 
             var carDisplay = cars
                 .Select(c => new { c.Id, Label = $"{c.Brand} {c.Model} (Owner: {c.Owner?.FullName ?? "—"})" })
@@ -137,7 +123,9 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
 
             ViewData["CarId"] = new SelectList(carDisplay, nameof(Car.Id), "Label", selectedCarId);
 
-            var garages = await _context.Garages.OrderBy(g => g.City).ThenBy(g => g.Address).ToListAsync();
+            var garages = (await _garageService.GetAllGaragesAsync())
+                .OrderBy(g => g.City).ThenBy(g => g.Address);
+
             var garageDisplay = garages
                 .Select(g => new { g.Id, Label = $"{g.City} — {g.Address}" })
                 .ToList();

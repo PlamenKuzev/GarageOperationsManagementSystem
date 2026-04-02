@@ -14,5 +14,10 @@ namespace GarageOperationsManagementSystem.Interfaces
 
         Task CompleteOrderAsync(int Id, decimal price);
 
+        Task UpdateOrderAsync(RepairOrder order);
+
+        Task DeleteOrderAsync(int id);
+
+        IQueryable<RepairOrder> GetQueryable();
     }
 }

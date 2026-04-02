@@ -15,5 +15,7 @@ namespace GarageOperationsManagementSystem.Interfaces
         Task UpdateGarageAsync(Garage garage);
 
         Task DeleteGarageAsync(int id);
+
+        IQueryable<Garage> GetQueryable();
     }
 }

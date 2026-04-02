@@ -1,9 +1,9 @@
-using GarageOperationsManagementSystem.Data;
+using GarageOperationsManagementSystem.Interfaces;
 using GarageOperationsManagementSystem.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
 {
@@ -11,33 +11,35 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
     [Authorize(Roles = "Admin,Employee")]
     public class RepairOrdersController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRepairOrderService _repairOrderService;
+        private readonly ICarService _carService;
+        private readonly IGarageService _garageService;
+        private readonly IEmployeeService _employeeService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public RepairOrdersController(ApplicationDbContext context)
+        public RepairOrdersController(
+            IRepairOrderService repairOrderService,
+            ICarService carService,
+            IGarageService garageService,
+            IEmployeeService employeeService,
+            UserManager<ApplicationUser> userManager)
         {
-            _context = context;
+            _repairOrderService = repairOrderService;
+            _carService = carService;
+            _garageService = garageService;
+            _employeeService = employeeService;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
         {
-            var orders = await _context.RepairOrders
-                .AsNoTracking()
-                .Include(r => r.Car).ThenInclude(c => c.Owner)
-                .Include(r => r.Garage)
-                .OrderByDescending(r => r.ArrivalDate)
-                .ToListAsync();
-
+            var orders = await _repairOrderService.GetAllOrdersAsync();
             return View(orders);
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            var order = await _context.RepairOrders
-                .AsNoTracking()
-                .Include(r => r.Car).ThenInclude(c => c.Owner)
-                .Include(r => r.Garage)
-                .FirstOrDefaultAsync(r => r.Id == id);
-
+            var order = await _repairOrderService.GetOrderByIdAsync(id);
             if (order == null)
             {
                 return NotFound();
@@ -62,7 +64,7 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
         {
             if (string.IsNullOrWhiteSpace(order.IssueCode))
             {
-                order.IssueCode = Guid.NewGuid().ToString("N")[..8];
+                order.IssueCode = Guid.NewGuid().ToString("N")[..8].ToUpper();
                 ModelState.Remove(nameof(RepairOrder.IssueCode));
             }
 
@@ -72,14 +74,13 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
                 return View(order);
             }
 
-            _context.RepairOrders.Add(order);
-            await _context.SaveChangesAsync();
+            await _repairOrderService.CreateOrderAsync(order);
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var order = await _context.RepairOrders.FindAsync(id);
+            var order = await _repairOrderService.GetOrderByIdAsync(id);
             if (order == null)
             {
                 return NotFound();
@@ -109,19 +110,13 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
                 return View(order);
             }
 
-            _context.Entry(order).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            await _repairOrderService.UpdateOrderAsync(order);
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var order = await _context.RepairOrders
-                .AsNoTracking()
-                .Include(r => r.Car).ThenInclude(c => c.Owner)
-                .Include(r => r.Garage)
-                .FirstOrDefaultAsync(r => r.Id == id);
-
+            var order = await _repairOrderService.GetOrderByIdAsync(id);
             if (order == null)
             {
                 return NotFound();
@@ -134,14 +129,7 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var order = await _context.RepairOrders.FindAsync(id);
-            if (order == null)
-            {
-                return NotFound();
-            }
-
-            _context.RepairOrders.Remove(order);
-            await _context.SaveChangesAsync();
+            await _repairOrderService.DeleteOrderAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
@@ -155,27 +143,27 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
                 return RedirectToAction(nameof(Details), new { id });
             }
 
-            var order = await _context.RepairOrders.FindAsync(id);
+            var order = await _repairOrderService.GetOrderByIdAsync(id);
             if (order == null)
             {
                 return NotFound();
             }
 
-            order.IsCompleted = true;
-            order.CompletionDate = DateTime.Now;
-            order.RepairPrice = repairPrice;
-            await _context.SaveChangesAsync();
-
+            await _repairOrderService.CompleteOrderAsync(id, repairPrice);
             return RedirectToAction(nameof(Details), new { id });
+        }
+
+        private async Task<(Models.Employee? emp, bool isTrusted)> GetCurrentEmployeeAsync()
+        {
+            var userId = _userManager.GetUserId(User);
+            var emp = userId != null ? await _employeeService.GetByUserIdAsync(userId) : null;
+            return (emp, emp?.IsTrusted ?? false);
         }
 
         private async Task PopulateRepairOrderSelectsAsync(int? selectedCarId = null, int? selectedGarageId = null)
         {
-            var cars = await _context.Cars
-                .Include(c => c.Owner)
-                .OrderBy(c => c.Brand)
-                .ThenBy(c => c.Model)
-                .ToListAsync();
+            var cars = (await _carService.GetAllCarsAsync())
+                .OrderBy(c => c.Brand).ThenBy(c => c.Model);
 
             var carDisplay = cars
                 .Select(c => new { c.Id, Label = $"{c.Brand} {c.Model} (Owner: {c.Owner?.FullName ?? "—"})" })
@@ -183,7 +171,9 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
 
             ViewData["CarId"] = new SelectList(carDisplay, nameof(Car.Id), "Label", selectedCarId);
 
-            var garages = await _context.Garages.OrderBy(g => g.City).ThenBy(g => g.Address).ToListAsync();
+            var garages = (await _garageService.GetAllGaragesAsync())
+                .OrderBy(g => g.City).ThenBy(g => g.Address);
+
             var garageDisplay = garages
                 .Select(g => new { g.Id, Label = $"{g.City} — {g.Address}" })
                 .ToList();
