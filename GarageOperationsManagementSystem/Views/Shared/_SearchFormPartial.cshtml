@@ -1,0 +1,18 @@
+@{
+    var currentFilter = ViewData["CurrentFilter"] as string ?? string.Empty;
+    var placeholder = ViewData["SearchPlaceholder"] as string ?? "Search…";
+}
+
+<form method="get" class="d-flex gap-2 mb-3">
+    <input type="text"
+           name="searchString"
+           value="@currentFilter"
+           placeholder="@placeholder"
+           class="form-control"
+           style="max-width: 320px;" />
+    <button type="submit" class="btn btn-outline-primary">Search</button>
+    @if (!string.IsNullOrWhiteSpace(currentFilter))
+    {
+        <a href="?" class="btn btn-outline-secondary">&#x2715; Clear</a>
+    }
+</form>
