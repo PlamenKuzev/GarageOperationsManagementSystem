@@ -26,5 +26,16 @@ namespace GarageOperationsManagementSystem.Helpers
                 .ToListAsync();
             return new PaginatedList<T>(items, count, pageIndex, pageSize);
         }
+
+        public static PaginatedList<T> CreateFromList(
+            IEnumerable<T> source, int pageIndex, int pageSize)
+        {
+            var list = source.ToList();
+            var items = list
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+            return new PaginatedList<T>(items, list.Count, pageIndex, pageSize);
+        }
     }
 }

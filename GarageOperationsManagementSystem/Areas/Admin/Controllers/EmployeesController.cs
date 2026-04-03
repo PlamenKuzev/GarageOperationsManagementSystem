@@ -55,9 +55,9 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
                 GarageName = e.Garage?.City ?? "—",
                 IsTrusted = e.IsTrusted,
                 LinkedEmail = e.ApplicationUser?.Email
-            }).AsQueryable();
+            });
 
-            var paged = await PaginatedList<EmployeeIndexViewModel>.CreateAsync(viewModels, pageNumber, pageSize);
+            var paged = PaginatedList<EmployeeIndexViewModel>.CreateFromList(viewModels, pageNumber, pageSize);
             ViewData["PageIndex"] = paged.PageIndex;
             ViewData["TotalPages"] = paged.TotalPages;
             ViewData["HasPreviousPage"] = paged.HasPreviousPage;
