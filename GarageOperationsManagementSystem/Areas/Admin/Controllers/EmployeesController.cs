@@ -216,7 +216,11 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
         private async Task PopulateGarageSelectAsync(int? selectedId = null)
         {
             var garages = await _garageService.GetAllGaragesAsync();
-            ViewData["GarageId"] = new SelectList(garages, "Id", "City", selectedId);
+            var items = garages
+                .OrderBy(g => g.City)
+                .Select(g => new { g.Id, Label = $"{g.City}, {g.Address}" })
+                .ToList();
+            ViewData["GarageId"] = new SelectList(items, "Id", "Label", selectedId);
         }
     }
 }
