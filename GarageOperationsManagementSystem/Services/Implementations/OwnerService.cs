@@ -18,6 +18,7 @@ namespace GarageOperationsManagementSystem.Services.Implementations
         {
             return await _context.Owners
                 .AsNoTracking()
+                .Include(o => o.Cars)
                 .OrderBy(o => o.FullName)
                 .ToListAsync();
         }
