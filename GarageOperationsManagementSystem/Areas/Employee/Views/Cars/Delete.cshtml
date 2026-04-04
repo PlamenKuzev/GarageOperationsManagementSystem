@@ -4,16 +4,28 @@
     ViewData["Title"] = "Delete car";
 }
 
-<h2 class="mb-3">Delete car</h2>
+<div class="mb-4">
+    <h1 class="h3">Delete car</h1>
+    <p class="text-muted mb-0">This action cannot be undone.</p>
+</div>
 
-<p>Delete this car?</p>
-<ul>
-    <li>@Model.Brand @Model.Model</li>
-    <li>Owner: @(Model.Owner?.FullName)</li>
-</ul>
+<div class="card border-danger" style="max-width: 460px;">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-4">Brand</dt>
+            <dd class="col-sm-8">@Model.Brand</dd>
 
-<form asp-action="Delete" method="post">
+            <dt class="col-sm-4">Model</dt>
+            <dd class="col-sm-8">@Model.Model</dd>
+
+            <dt class="col-sm-4">Owner</dt>
+            <dd class="col-sm-8">@(Model.Owner?.FullName ?? "—")</dd>
+        </dl>
+    </div>
+</div>
+
+<form asp-action="Delete" method="post" class="mt-4">
     <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    <button type="submit" class="btn btn-danger">Yes, delete</button>
+    <a asp-action="Index" class="btn btn-outline-secondary ms-2">Cancel</a>
 </form>
