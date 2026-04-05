@@ -79,6 +79,46 @@ namespace GarageOperationsManagementSystem.Seed
                     await dbContext.SaveChangesAsync();
                 }
             }
+
+            var trustedEmail = "trustedEmployee@garage.com";
+            var trustedPassword = "TrustedEmployee123!";
+
+            ApplicationUser? trustedUser = await userManager.FindByEmailAsync(trustedEmail);
+            if (trustedUser == null)
+            {
+                trustedUser = new ApplicationUser
+                {
+                    UserName = trustedEmail,
+                    Email = trustedEmail,
+                    FullName = "Trusted Employee",
+                    EmailConfirmed = true
+                };
+
+                await userManager.CreateAsync(trustedUser, trustedPassword);
+                await userManager.AddToRoleAsync(trustedUser, "Employee");
+            }
+
+            var hasTrustedRecord = await dbContext.Employees
+                .AnyAsync(e => e.ApplicationUserId == trustedUser.Id);
+
+            if (!hasTrustedRecord)
+            {
+                var firstGarage = await dbContext.Garages.FirstOrDefaultAsync();
+                if (firstGarage != null)
+                {
+                    dbContext.Employees.Add(new Employee
+                    {
+                        Name = "Trusted Employee",
+                        Position = "Senior Mechanic",
+                        Salary = 3000m,
+                        WorkingSince = DateTime.Now.AddYears(-5),
+                        GarageId = firstGarage.Id,
+                        ApplicationUserId = trustedUser.Id,
+                        IsTrusted = true
+                    });
+                    await dbContext.SaveChangesAsync();
+                }
+            }
         }
     }
 }

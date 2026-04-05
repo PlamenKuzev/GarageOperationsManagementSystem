@@ -9,7 +9,6 @@ namespace GarageOperationsManagementSystem.Tests
         private static OwnerService CreateService(string dbName)
             => new OwnerService(TestDbContextFactory.Create(dbName));
 
-        // ── GetAllAsync ──────────────────────────────────────────────────────
         [Fact]
         public async Task GetAllAsync_ReturnsAllOwners()
         {
@@ -23,6 +22,7 @@ namespace GarageOperationsManagementSystem.Tests
 
             Assert.Equal(2, result.Count());
         }
+
 
         [Fact]
         public async Task GetAllAsync_ReturnsOrderedByFullName()
@@ -55,7 +55,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Single(result.Cars);
         }
 
-        // ── GetByIdAsync ─────────────────────────────────────────────────────
         [Fact]
         public async Task GetByIdAsync_ReturnsOwner_WhenExists()
         {
@@ -79,7 +78,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Null(result);
         }
 
-        // ── GetByIdWithCarsAsync ──────────────────────────────────────────────
         [Fact]
         public async Task GetByIdWithCarsAsync_IncludesCars()
         {
@@ -105,7 +103,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Null(result);
         }
 
-        // ── CreateAsync ───────────────────────────────────────────────────────
         [Fact]
         public async Task CreateAsync_AddsOwnerToDatabase()
         {
@@ -117,7 +114,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Equal(1, ctx.Owners.Count());
         }
 
-        // ── UpdateAsync ───────────────────────────────────────────────────────
         [Fact]
         public async Task UpdateAsync_PersistsChanges()
         {
@@ -133,7 +129,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Equal("New Name", ctx.Owners.Find(owner.Id)!.FullName);
         }
 
-        // ── DeleteAsync ───────────────────────────────────────────────────────
         [Fact]
         public async Task DeleteAsync_RemovesOwner()
         {
@@ -157,7 +152,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Null(ex);
         }
 
-        // ── ExistsAsync ───────────────────────────────────────────────────────
         [Fact]
         public async Task ExistsAsync_ReturnsTrue_WhenOwnerExists()
         {
@@ -177,7 +171,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.False(await svc.ExistsAsync(999));
         }
 
-        // ── HasCarsAsync ──────────────────────────────────────────────────────
         [Fact]
         public async Task HasCarsAsync_ReturnsTrue_WhenOwnerHasCars()
         {
@@ -204,7 +197,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.False(await svc.HasCarsAsync(owner.Id));
         }
 
-        // ── GetQueryable ──────────────────────────────────────────────────────
         [Fact]
         public async Task GetQueryable_ReturnsQueryableOfOwners()
         {

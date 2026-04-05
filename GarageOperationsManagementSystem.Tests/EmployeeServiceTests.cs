@@ -34,7 +34,6 @@ namespace GarageOperationsManagementSystem.Tests
                 ApplicationUserId = userId
             };
 
-        // ── GetAllAsync ───────────────────────────────────────────────────────
         [Fact]
         public async Task GetAllAsync_ReturnsAllEmployees()
         {
@@ -76,7 +75,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Equal("Sofia", result.Garage.City);
         }
 
-        // ── GetByIdAsync ──────────────────────────────────────────────────────
         [Fact]
         public async Task GetByIdAsync_ReturnsEmployee_WhenExists()
         {
@@ -100,7 +98,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Null(result);
         }
 
-        // ── GetByUserIdAsync ──────────────────────────────────────────────────
         [Fact]
         public async Task GetByUserIdAsync_ReturnsEmployee_WhenUserIdMatches()
         {
@@ -137,7 +134,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.NotNull(result!.Garage);
         }
 
-        // ── CreateAsync ───────────────────────────────────────────────────────
         [Fact]
         public async Task CreateAsync_AddsEmployee()
         {
@@ -149,7 +145,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Equal(1, ctx.Employees.Count());
         }
 
-        // ── UpdateAsync ───────────────────────────────────────────────────────
         [Fact]
         public async Task UpdateAsync_PersistsChanges()
         {
@@ -180,7 +175,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.True(ctx.Employees.Find(emp.Id)!.IsTrusted);
         }
 
-        // ── DeleteAsync ───────────────────────────────────────────────────────
         [Fact]
         public async Task DeleteAsync_RemovesEmployee()
         {
@@ -203,7 +197,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Null(ex);
         }
 
-        // ── ExistsAsync ───────────────────────────────────────────────────────
         [Fact]
         public async Task ExistsAsync_ReturnsTrue_WhenExists()
         {

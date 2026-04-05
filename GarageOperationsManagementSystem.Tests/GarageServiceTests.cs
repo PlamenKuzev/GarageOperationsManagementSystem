@@ -15,7 +15,6 @@ namespace GarageOperationsManagementSystem.Tests
             return (new GarageService(ctx), ctx);
         }
 
-        // ── GetAllGaragesAsync ────────────────────────────────────────────────
         [Fact]
         public async Task GetAllGaragesAsync_ReturnsAllGarages()
         {
@@ -36,7 +35,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Empty(result);
         }
 
-        // ── GetGarageByIdAsync ────────────────────────────────────────────────
         [Fact]
         public async Task GetGarageByIdAsync_ReturnsGarage_WhenExists()
         {
@@ -59,7 +57,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Null(result);
         }
 
-        // ── CreateGarageAsync ─────────────────────────────────────────────────
         [Fact]
         public async Task CreateGarageAsync_AddsGarage()
         {
@@ -68,7 +65,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Equal(1, ctx.Garages.Count());
         }
 
-        // ── CreateGaragesAsync ────────────────────────────────────────────────
         [Fact]
         public async Task CreateGaragesAsync_AddsMultipleGarages()
         {
@@ -77,7 +73,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Equal(2, ctx.Garages.Count());
         }
 
-        // ── UpdateGarageAsync ─────────────────────────────────────────────────
         [Fact]
         public async Task UpdateGarageAsync_PersistsChanges()
         {
@@ -92,7 +87,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Equal("Varna", ctx.Garages.Find(garage.Id)!.City);
         }
 
-        // ── DeleteGarageAsync ─────────────────────────────────────────────────
         [Fact]
         public async Task DeleteGarageAsync_RemovesGarage()
         {
@@ -114,7 +108,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Null(ex);
         }
 
-        // ── GetQueryable ──────────────────────────────────────────────────────
         [Fact]
         public async Task GetQueryable_ReturnsQueryableOfGarages()
         {

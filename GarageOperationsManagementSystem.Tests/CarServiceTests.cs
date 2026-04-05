@@ -20,7 +20,6 @@ namespace GarageOperationsManagementSystem.Tests
             return owner;
         }
 
-        // ── GetAllCarsAsync ───────────────────────────────────────────────────
         [Fact]
         public async Task GetAllCarsAsync_ReturnsAllCars()
         {
@@ -58,7 +57,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Empty(result);
         }
 
-        // ── GetCarByIdAsync ───────────────────────────────────────────────────
         [Fact]
         public async Task GetCarByIdAsync_ReturnsCar_WhenExists()
         {
@@ -96,7 +94,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.NotNull(result!.Owner);
         }
 
-        // ── CreateCarAsync ────────────────────────────────────────────────────
         [Fact]
         public async Task CreateCarAsync_AddsCarToDatabase()
         {
@@ -108,7 +105,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Equal(1, ctx.Cars.Count());
         }
 
-        // ── UpdateCarAsync ────────────────────────────────────────────────────
         [Fact]
         public async Task UpdateCarAsync_PersistsChanges()
         {
@@ -124,7 +120,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Equal("Corolla", ctx.Cars.Find(car.Id)!.Model);
         }
 
-        // ── DeleteCarAsync ────────────────────────────────────────────────────
         [Fact]
         public async Task DeleteCarAsync_RemovesCar()
         {

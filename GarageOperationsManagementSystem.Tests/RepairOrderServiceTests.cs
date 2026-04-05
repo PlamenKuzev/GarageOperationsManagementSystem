@@ -35,7 +35,6 @@ namespace GarageOperationsManagementSystem.Tests
                 GarageId = garageId
             };
 
-        // ── GetAllOrdersAsync ─────────────────────────────────────────────────
         [Fact]
         public async Task GetAllOrdersAsync_ReturnsAllOrders()
         {
@@ -63,7 +62,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.NotNull(order.Car.Owner);
         }
 
-        // ── GetOrderByIdAsync ─────────────────────────────────────────────────
         [Fact]
         public async Task GetOrderByIdAsync_ReturnsOrder_WhenExists()
         {
@@ -87,7 +85,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Null(result);
         }
 
-        // ── GetOrderByIssueCodeAsync ──────────────────────────────────────────
         [Fact]
         public async Task GetOrderByIssueCodeAsync_ReturnsOrder_WhenCodeMatches()
         {
@@ -130,7 +127,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.NotNull(result);
         }
 
-        // ── CreateOrderAsync ──────────────────────────────────────────────────
         [Fact]
         public async Task CreateOrderAsync_AddsOrder()
         {
@@ -142,7 +138,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Equal(1, ctx.RepairOrders.Count());
         }
 
-        // ── CompleteOrderAsync ────────────────────────────────────────────────
         [Fact]
         public async Task CompleteOrderAsync_SetsCompletedAndPrice()
         {
@@ -168,7 +163,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Null(ex);
         }
 
-        // ── UpdateOrderAsync ──────────────────────────────────────────────────
         [Fact]
         public async Task UpdateOrderAsync_PersistsChanges()
         {
@@ -184,7 +178,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Equal("Updated description", ctx.RepairOrders.Find(order.Id)!.IssueDescription);
         }
 
-        // ── DeleteOrderAsync ──────────────────────────────────────────────────
         [Fact]
         public async Task DeleteOrderAsync_RemovesOrder()
         {
@@ -207,7 +200,6 @@ namespace GarageOperationsManagementSystem.Tests
             Assert.Null(ex);
         }
 
-        // ── GetQueryable ──────────────────────────────────────────────────────
         [Fact]
         public async Task GetQueryable_ReturnsQueryableOfOrders()
         {
