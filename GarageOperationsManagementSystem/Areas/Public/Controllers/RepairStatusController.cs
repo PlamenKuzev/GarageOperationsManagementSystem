@@ -34,6 +34,7 @@ namespace GarageOperationsManagementSystem.Areas.Public.Controllers
             var order = await _repairOrderService.GetOrderByIssueCodeAsync(model.IssueCode);
             if (order is null)
             {
+                await Task.Delay(5000);
                 model.NotFound = true;
                 model.Result = null;
                 return View(model);
