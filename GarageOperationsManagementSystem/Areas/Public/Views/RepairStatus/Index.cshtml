@@ -28,6 +28,20 @@
             </div>
         </div>
 
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="card mt-4 border-secondary">
+                <div class="card-body">
+                    <h2 class="h6 text-muted mb-2">Demo codes</h2>
+                    <ul class="mb-0">
+                        <li><strong>DEMO0001</strong> — in progress</li>
+                        <li><strong>DEMO0002</strong> — completed</li>
+                        <li><strong>DEMO0003</strong> — in progress</li>
+                    </ul>
+                </div>
+            </div>
+        }
+
         @if (Model.NotFound)
         {
             <div class="alert alert-warning mt-4" role="alert">

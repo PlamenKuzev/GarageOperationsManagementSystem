@@ -15,6 +15,12 @@ namespace GarageOperationsManagementSystem.Controllers
 
         public IActionResult Index()
         {
+            if (User.IsInRole("Admin"))
+                return RedirectToAction("Index", "Home", new { area = "Admin" });
+
+            if (User.IsInRole("Employee"))
+                return RedirectToAction("Index", "Home", new { area = "Employee" });
+
             return View();
         }
 
