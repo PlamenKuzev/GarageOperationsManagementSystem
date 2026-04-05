@@ -13,5 +13,6 @@ namespace GarageOperationsManagementSystem.Interfaces
         Task<bool> ExistsAsync(int id);
         Task<bool> HasCarsAsync(int id);
         IQueryable<Owner> GetQueryable();
+        Task<Owner?> GetByUserIdAsync(string userId);
     }
 }

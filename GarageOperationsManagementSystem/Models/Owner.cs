@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GarageOperationsManagementSystem.Models
 {
@@ -16,6 +17,11 @@ namespace GarageOperationsManagementSystem.Models
         [EmailAddress]
         [Required]
         public string Email { get; set; } = null!;
+
+        public string? ApplicationUserId { get; set; }
+
+        [ForeignKey(nameof(ApplicationUserId))]
+        public ApplicationUser? ApplicationUser { get; set; }
 
         public ICollection<Car> Cars { get; set; } = new List<Car>();
     }

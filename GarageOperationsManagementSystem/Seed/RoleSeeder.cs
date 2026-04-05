@@ -119,6 +119,35 @@ namespace GarageOperationsManagementSystem.Seed
                     await dbContext.SaveChangesAsync();
                 }
             }
+
+            // Seed a demo guest user linked to the demo owner
+            var guestEmail = "owner@garage.com";
+            var guestPassword = "Owner123!";
+
+            ApplicationUser? guestUser = await userManager.FindByEmailAsync(guestEmail);
+            if (guestUser == null)
+            {
+                guestUser = new ApplicationUser
+                {
+                    UserName = guestEmail,
+                    Email = guestEmail,
+                    FullName = "Demo Owner",
+                    EmailConfirmed = true
+                };
+
+                await userManager.CreateAsync(guestUser, guestPassword);
+                await userManager.AddToRoleAsync(guestUser, "Guest");
+            }
+
+            // Link the guest user to the Demo Owner record if not already linked
+            var demoOwner = await dbContext.Owners
+                .FirstOrDefaultAsync(o => o.FullName == "Demo Owner" && o.ApplicationUserId == null);
+
+            if (demoOwner != null && guestUser != null)
+            {
+                demoOwner.ApplicationUserId = guestUser.Id;
+                await dbContext.SaveChangesAsync();
+            }
         }
     }
 }

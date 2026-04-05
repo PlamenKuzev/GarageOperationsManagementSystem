@@ -9,34 +9,67 @@
     <p class="text-muted mb-0">Owner details</p>
 </div>
 
-<div class="card" style="max-width: 460px;">
-    <div class="card-body">
-        <dl class="row mb-0">
-            <dt class="col-sm-4">Full name</dt>
-            <dd class="col-sm-8">@Model.FullName</dd>
+<div class="row g-4">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">Contact info</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Full name</dt>
+                    <dd class="col-sm-8">@Model.FullName</dd>
 
-            <dt class="col-sm-4">Email</dt>
-            <dd class="col-sm-8">@Model.Email</dd>
+                    <dt class="col-sm-4">Email</dt>
+                    <dd class="col-sm-8">@Model.Email</dd>
 
-            <dt class="col-sm-4">Phone</dt>
-            <dd class="col-sm-8">@Model.PhoneNumber</dd>
+                    <dt class="col-sm-4">Phone</dt>
+                    <dd class="col-sm-8">@Model.PhoneNumber</dd>
 
-            <dt class="col-sm-4">Cars</dt>
-            <dd class="col-sm-8"><span class="badge bg-secondary">@(Model.Cars?.Count ?? 0)</span></dd>
-        </dl>
+                    <dt class="col-sm-4">Cars</dt>
+                    <dd class="col-sm-8"><span class="badge bg-secondary">@(Model.Cars?.Count ?? 0)</span></dd>
+                </dl>
+            </div>
+        </div>
+
+        @if (Model.Cars != null && Model.Cars.Any())
+        {
+            <h2 class="h6 mt-3 mb-2 text-muted text-uppercase">Cars</h2>
+            <ul class="list-group">
+                @foreach (var car in Model.Cars)
+                {
+                    <li class="list-group-item">@car.Brand @car.Model (@car.Year)</li>
+                }
+            </ul>
+        }
+    </div>
+
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">Linked account</div>
+            <div class="card-body">
+                @if (Model.ApplicationUser != null)
+                {
+                    <p class="mb-3">
+                        <span class="badge bg-success me-2">Linked</span>
+                        <strong>@Model.ApplicationUser.Email</strong>
+                    </p>
+                    <form asp-action="UnlinkUser" asp-route-id="@Model.Id" method="post">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Unlink account</button>
+                    </form>
+                }
+                else
+                {
+                    <p class="text-muted small mb-3">No account linked. Select a user below to give them access to this owner's repair history.</p>
+                    <form asp-action="LinkUser" asp-route-id="@Model.Id" method="post" class="d-flex gap-2">
+                        <select name="userId" class="form-select form-select-sm" asp-items="ViewBag.LinkableUsers">
+                            <option value="">— Select account —</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-primary text-nowrap">Link account</button>
+                    </form>
+                }
+            </div>
+        </div>
     </div>
 </div>
-
-@if (Model.Cars != null && Model.Cars.Any())
-{
-    <h2 class="h5 mt-4 mb-2">Cars</h2>
-    <ul class="list-group" style="max-width: 460px;">
-        @foreach (var car in Model.Cars)
-        {
-            <li class="list-group-item">@car.Brand @car.Model (@car.Year)</li>
-        }
-    </ul>
-}
 
 <div class="mt-4">
     <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>

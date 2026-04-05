@@ -1,0 +1,100 @@
+@model GarageOperationsManagementSystem.Models.Owner?
+
+@{
+    ViewData["Title"] = "My repairs";
+}
+
+<div class="mb-4">
+    <h1 class="h3">My repairs</h1>
+    <p class="text-muted mb-0">All repair orders linked to your vehicles.</p>
+</div>
+
+@if (Model == null)
+{
+    <div class="alert alert-info">
+        <strong>No profile linked yet.</strong>
+        Your account hasn't been connected to an owner record.
+        Please contact a garage employee or admin to link your account.
+    </div>
+}
+else
+{
+    <div class="card mb-4" style="max-width: 460px;">
+        <div class="card-header">Your details</div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Name</dt>
+                <dd class="col-sm-8">@Model.FullName</dd>
+
+                <dt class="col-sm-4">Email</dt>
+                <dd class="col-sm-8">@Model.Email</dd>
+
+                <dt class="col-sm-4">Phone</dt>
+                <dd class="col-sm-8">@Model.PhoneNumber</dd>
+            </dl>
+        </div>
+    </div>
+
+    @if (!Model.Cars.Any())
+    {
+        <p class="text-muted">No vehicles registered under your name yet.</p>
+    }
+    else
+    {
+        foreach (var car in Model.Cars)
+        {
+            var orders = car.RepairOrders.OrderByDescending(r => r.ArrivalDate).ToList();
+
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold">@car.Brand @car.Model @(car.Year.HasValue ? $"({car.Year})" : "")</span>
+                    <span class="badge bg-secondary">@orders.Count repair order(s)</span>
+                </div>
+
+                @if (!orders.Any())
+                {
+                    <div class="card-body text-muted small">No repair orders for this vehicle.</div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Issue code</th>
+                                    <th>Description</th>
+                                    <th>Garage</th>
+                                    <th>Arrived</th>
+                                    <th>Status</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in orders)
+                                {
+                                    <tr>
+                                        <td><code>@order.IssueCode</code></td>
+                                        <td>@order.IssueDescription</td>
+                                        <td>@(order.Garage != null ? $"{order.Garage.City}, {order.Garage.Address}" : "—")</td>
+                                        <td>@order.ArrivalDate.ToString("dd MMM yyyy")</td>
+                                        <td>
+                                            @if (order.IsCompleted)
+                                            {
+                                                <span class="badge bg-success">Completed</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark">In progress</span>
+                                            }
+                                        </td>
+                                        <td>@(order.RepairPrice.HasValue ? order.RepairPrice.Value.ToString("C") : "—")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        }
+    }
+}

@@ -1,7 +1,9 @@
 using GarageOperationsManagementSystem.Interfaces;
 using GarageOperationsManagementSystem.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
@@ -11,10 +13,17 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
     public class OwnersController : Controller
     {
         private readonly IOwnerService _ownerService;
+        private readonly IEmployeeService _employeeService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public OwnersController(IOwnerService ownerService)
+        public OwnersController(
+            IOwnerService ownerService,
+            IEmployeeService employeeService,
+            UserManager<ApplicationUser> userManager)
         {
             _ownerService = ownerService;
+            _employeeService = employeeService;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
@@ -26,11 +35,12 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var owner = await _ownerService.GetByIdWithCarsAsync(id);
-            if (owner == null)
-            {
-                return NotFound();
-            }
+            if (owner == null) return NotFound();
 
+            if (await IsTrustedAsync())
+                await PopulateLinkableUsersAsync(owner.ApplicationUserId);
+
+            ViewData["IsTrusted"] = await IsTrustedAsync();
             return View(owner);
         }
 
@@ -55,11 +65,7 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var owner = await _ownerService.GetByIdAsync(id);
-            if (owner == null)
-            {
-                return NotFound();
-            }
-
+            if (owner == null) return NotFound();
             return View(owner);
         }
 
@@ -67,10 +73,7 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id", "FullName", "PhoneNumber", "Email")] Owner owner)
         {
-            if (id != owner.Id)
-            {
-                return BadRequest();
-            }
+            if (id != owner.Id) return BadRequest();
 
             if (ModelState.IsValid)
             {
@@ -81,10 +84,7 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!await _ownerService.ExistsAsync(owner.Id))
-                    {
                         return NotFound();
-                    }
-
                     throw;
                 }
 
@@ -97,11 +97,7 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var owner = await _ownerService.GetByIdWithCarsAsync(id);
-            if (owner == null)
-            {
-                return NotFound();
-            }
-
+            if (owner == null) return NotFound();
             return View(owner);
         }
 
@@ -110,9 +106,7 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (!await _ownerService.ExistsAsync(id))
-            {
                 return RedirectToAction(nameof(Index));
-            }
 
             if (await _ownerService.HasCarsAsync(id))
             {
@@ -122,6 +116,76 @@ namespace GarageOperationsManagementSystem.Areas.Employee.Controllers
 
             await _ownerService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        // ── Link / Unlink (trusted only) ──────────────────────────────────────
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LinkUser(int id, string userId)
+        {
+            if (!await IsTrustedAsync())
+            {
+                TempData["ErrorMessage"] = "Only trusted employees can link accounts.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            var owner = await _ownerService.GetByIdAsync(id);
+            if (owner == null) return NotFound();
+
+            owner.ApplicationUserId = userId;
+            await _ownerService.UpdateAsync(owner);
+
+            TempData["SuccessMessage"] = "Account linked successfully.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UnlinkUser(int id)
+        {
+            if (!await IsTrustedAsync())
+            {
+                TempData["ErrorMessage"] = "Only trusted employees can unlink accounts.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            var owner = await _ownerService.GetByIdAsync(id);
+            if (owner == null) return NotFound();
+
+            owner.ApplicationUserId = null;
+            await _ownerService.UpdateAsync(owner);
+
+            TempData["SuccessMessage"] = "Account unlinked.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        // ── Helpers ───────────────────────────────────────────────────────────
+
+        private async Task<bool> IsTrustedAsync()
+        {
+            var userId = _userManager.GetUserId(User);
+            if (userId == null) return false;
+            var emp = await _employeeService.GetByUserIdAsync(userId);
+            return emp?.IsTrusted ?? false;
+        }
+
+        private async Task PopulateLinkableUsersAsync(string? currentUserId)
+        {
+            var allOwners = await _ownerService.GetAllAsync();
+            var alreadyLinked = allOwners
+                .Where(o => o.ApplicationUserId != null && o.ApplicationUserId != currentUserId)
+                .Select(o => o.ApplicationUserId!)
+                .ToHashSet();
+
+            var users = _userManager.Users
+                .OrderBy(u => u.Email)
+                .ToList()
+                .Where(u => !alreadyLinked.Contains(u.Id))
+                .Select(u => new { u.Id, Label = u.Email ?? u.UserName ?? u.Id })
+                .ToList();
+
+            ViewData["LinkableUsers"] = new SelectList(users, "Id", "Label", currentUserId);
         }
     }
 }

@@ -1,19 +1,81 @@
 @model GarageOperationsManagementSystem.Models.Owner
 
 @{
-    ViewData["Title"] = "Owner details";
+    ViewData["Title"] = $"Owner — {Model.FullName}";
+    var isTrusted = (bool)(ViewData["IsTrusted"] ?? false);
 }
 
-<h2 class="mb-3">Owner details</h2>
+<div class="mb-4">
+    <h1 class="h3">@Model.FullName</h1>
+    <p class="text-muted mb-0">Owner details</p>
+</div>
 
-<ul>
-    <li>Name: @Model.FullName</li>
-    <li>Phone: @Model.PhoneNumber</li>
-    <li>Email: @Model.Email</li>
-    <li>Cars: @(Model.Cars?.Count ?? 0)</li>
-</ul>
+<div class="row g-4">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">Contact info</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Full name</dt>
+                    <dd class="col-sm-8">@Model.FullName</dd>
 
-<p>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to list</a>
-</p>
+                    <dt class="col-sm-4">Email</dt>
+                    <dd class="col-sm-8">@Model.Email</dd>
+
+                    <dt class="col-sm-4">Phone</dt>
+                    <dd class="col-sm-8">@Model.PhoneNumber</dd>
+
+                    <dt class="col-sm-4">Cars</dt>
+                    <dd class="col-sm-8"><span class="badge bg-secondary">@(Model.Cars?.Count ?? 0)</span></dd>
+                </dl>
+            </div>
+        </div>
+
+        @if (Model.Cars != null && Model.Cars.Any())
+        {
+            <h2 class="h6 mt-3 mb-2 text-muted text-uppercase">Cars</h2>
+            <ul class="list-group">
+                @foreach (var car in Model.Cars)
+                {
+                    <li class="list-group-item">@car.Brand @car.Model (@car.Year)</li>
+                }
+            </ul>
+        }
+    </div>
+
+    @if (isTrusted)
+    {
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header">Linked account</div>
+                <div class="card-body">
+                    @if (Model.ApplicationUser != null)
+                    {
+                        <p class="mb-3">
+                            <span class="badge bg-success me-2">Linked</span>
+                            <strong>@Model.ApplicationUser.Email</strong>
+                        </p>
+                        <form asp-action="UnlinkUser" asp-route-id="@Model.Id" method="post">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Unlink account</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <p class="text-muted small mb-3">No account linked. Select a user below to give them access to this owner's repair history.</p>
+                        <form asp-action="LinkUser" asp-route-id="@Model.Id" method="post" class="d-flex gap-2">
+                            <select name="userId" class="form-select form-select-sm" asp-items="ViewBag.LinkableUsers">
+                                <option value="">— Select account —</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-primary text-nowrap">Link account</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="mt-4">
+    <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+    <a class="btn btn-outline-secondary ms-2" asp-action="Index">Back to list</a>
+</div>

@@ -32,6 +32,7 @@ namespace GarageOperationsManagementSystem.Services.Implementations
         {
             return await _context.Owners
                 .Include(o => o.Cars)
+                .Include(o => o.ApplicationUser)
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
@@ -70,6 +71,15 @@ namespace GarageOperationsManagementSystem.Services.Implementations
         public IQueryable<Owner> GetQueryable()
         {
             return _context.Owners.AsNoTracking();
+        }
+
+        public async Task<Owner?> GetByUserIdAsync(string userId)
+        {
+            return await _context.Owners
+                .Include(o => o.Cars)
+                    .ThenInclude(c => c.RepairOrders)
+                        .ThenInclude(r => r.Garage)
+                .FirstOrDefaultAsync(o => o.ApplicationUserId == userId);
         }
     }
 }
