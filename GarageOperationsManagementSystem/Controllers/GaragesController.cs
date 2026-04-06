@@ -1,9 +1,11 @@
 using GarageOperationsManagementSystem.Interfaces;
 using GarageOperationsManagementSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GarageOperationsManagementSystem.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class GaragesController : Controller
     {
         private readonly IGarageService _garageService;
@@ -19,6 +21,7 @@ namespace GarageOperationsManagementSystem.Controllers
             return View(garages);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> MapView()
         {
             var garages = await _garageService.GetAllGaragesAsync();
