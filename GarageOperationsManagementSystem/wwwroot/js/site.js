@@ -5,10 +5,10 @@
     function applyTheme(dark) {
         if (dark) {
             document.documentElement.classList.add('dark-mode');
-            btn.textContent = '☀ Light';
+            btn.innerHTML = '<i class="bi bi-sun"></i> Light';
         } else {
             document.documentElement.classList.remove('dark-mode');
-            btn.textContent = '☾ Dark';
+            btn.innerHTML = '<i class="bi bi-moon"></i> Dark';
         }
     }
 

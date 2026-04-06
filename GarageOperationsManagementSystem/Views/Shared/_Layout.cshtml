@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Garage Operations</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GarageOperationsManagementSystem.styles.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
@@ -23,38 +24,52 @@
                         @if (!User.IsInRole("Employee") && !User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                <a class="nav-link nav-btn text-white" asp-area="" asp-controller="Home" asp-action="Index">
+                                    <i class="bi bi-house"></i> Home
+                                </a>
                             </li>
                         }
                         <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="Public" asp-controller="RepairStatus" asp-action="Index">Check Repair Status</a>
+                            <a class="nav-link nav-btn text-white" asp-area="Public" asp-controller="RepairStatus" asp-action="Index">
+                                <i class="bi bi-search"></i> Check Repair Status
+                            </a>
                         </li>
                         @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="Admin" asp-controller="Home" asp-action="Index">Admin</a>
+                                <a class="nav-link nav-btn text-white" asp-area="Admin" asp-controller="Home" asp-action="Index">
+                                    <i class="bi bi-gear"></i> Admin
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Garages" asp-action="MapView">Map</a>
+                                <a class="nav-link nav-btn text-white" asp-area="" asp-controller="Garages" asp-action="MapView">
+                                    <i class="bi bi-map"></i> Map
+                                </a>
                             </li>
                         }
                         @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Employee"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="Employee" asp-controller="Home" asp-action="Index">My Dashboard</a>
+                                <a class="nav-link nav-btn text-white" asp-area="Employee" asp-controller="Home" asp-action="Index">
+                                    <i class="bi bi-speedometer2"></i> My Dashboard
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Garages" asp-action="MapView">Map</a>
+                                <a class="nav-link nav-btn text-white" asp-area="" asp-controller="Garages" asp-action="MapView">
+                                    <i class="bi bi-map"></i> Map
+                                </a>
                             </li>
                         }
                         @if (User.Identity != null && User.Identity.IsAuthenticated && !User.IsInRole("Admin") && !User.IsInRole("Employee"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Profile" asp-action="Index">My Repairs</a>
+                                <a class="nav-link nav-btn text-white" asp-area="" asp-controller="Profile" asp-action="Index">
+                                    <i class="bi bi-wrench"></i> My Repairs
+                                </a>
                             </li>
                         }
                     </ul>
-                    <button id="dark-mode-toggle">☾ Dark</button>
+                    <button id="dark-mode-toggle"><i class="bi bi-moon"></i> Dark</button>
                     <partial name="_LoginPartial" />
                 </div>
             </div>
