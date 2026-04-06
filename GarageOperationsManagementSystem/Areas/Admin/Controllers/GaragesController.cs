@@ -161,5 +161,54 @@ namespace GarageOperationsManagementSystem.Areas.Admin.Controllers
             await _garageService.DeleteGarageAsync(id);
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LoadDemoData()
+        {
+            var demoGarages = BuildDemoGarages(30);
+            await _garageService.CreateGaragesAsync(demoGarages);
+            TempData["SuccessMessage"] = "30 demo garages have been added.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        private static List<Garage> BuildDemoGarages(int count)
+        {
+            string[] cities =
+            {
+                "Sofia", "Plovdiv", "Varna", "Burgas", "Ruse",
+                "Stara Zagora", "Pleven", "Sliven", "Dobrich", "Shumen",
+                "Pernik", "Yambol", "Haskovo", "Pazardzhik", "Blagoevgrad"
+            };
+
+            string[] schedules =
+            {
+                "Mon-Fri 08:00-17:00",
+                "Mon-Sat 09:00-18:00",
+                "Mon-Fri 07:30-16:30",
+                "Daily 10:00-19:00"
+            };
+
+            var random = new Random();
+            var garages = new List<Garage>(count);
+
+            for (var i = 1; i <= count; i++)
+            {
+                var latitude  = Math.Round(random.NextDouble() * (44.25 - 41.2) + 41.2, 6);
+                var longitude = Math.Round(random.NextDouble() * (28.65 - 22.35) + 22.35, 6);
+
+                garages.Add(new Garage
+                {
+                    City         = cities[random.Next(cities.Length)],
+                    Address      = $"Demo Street {random.Next(1, 200)}, No. {i}",
+                    Capacity     = random.Next(4, 31),
+                    WorkSchedule = schedules[random.Next(schedules.Length)],
+                    Latitude     = latitude,
+                    Longitude    = longitude
+                });
+            }
+
+            return garages;
+        }
     }
 }
