@@ -151,6 +151,14 @@ html.dark-mode .collapse .card-footer {
   background-color: #1a1a1a;
 }
 
+/* Fix form-floating overlap: hide placeholder since the floating label serves that role */
+.form-floating > .form-control::placeholder {
+  opacity: 0;
+}
+.form-floating > .form-control:focus::placeholder {
+  opacity: 0;
+}
+
 /* Dark mode toggle button */
 #dark-mode-toggle {
   background: none;
