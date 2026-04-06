@@ -1,0 +1,59 @@
+@page
+@model GarageOperationsManagementSystem.Areas.Identity.Pages.Account.Manage.EnableAuthenticatorModel
+
+@{
+    ViewData["Title"] = "Configure authenticator app";
+}
+
+<h4>@ViewData["Title"]</h4>
+
+<div class="row">
+    <div class="col-md-8">
+        <p>To use an authenticator app, follow these steps:</p>
+        <ol class="list">
+            <li>
+                <p>
+                    Download a two-factor authenticator app such as
+                    <a href="https://go.microsoft.com/fwlink/?Linkid=825072">Microsoft Authenticator</a> or
+                    <a href="https://go.microsoft.com/fwlink/?Linkid=825071">Google Authenticator</a>.
+                </p>
+            </li>
+            <li>
+                <p>Scan the QR code below or enter the key manually into your authenticator app:</p>
+                <div id="qrCode" class="my-3"></div>
+                <div id="qrCodeData" data-url="@Model.AuthenticatorUri"></div>
+                <p class="text-muted small">Key: <kbd>@Model.SharedKey</kbd></p>
+            </li>
+            <li>
+                <p>
+                    Once scanned, your authenticator app will show a 6-digit code.
+                    Enter it below to confirm setup.
+                </p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <form id="send-code" method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                            <div class="mb-3">
+                                <label asp-for="Input.Code" class="form-label"></label>
+                                <input asp-for="Input.Code" class="form-control" autocomplete="one-time-code" />
+                                <span asp-validation-for="Input.Code" class="text-danger"></span>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Verify</button>
+                        </form>
+                    </div>
+                </div>
+            </li>
+        </ol>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        new QRCode(document.getElementById("qrCode"), {
+            text: document.getElementById("qrCodeData").getAttribute("data-url"),
+            width: 150,
+            height: 150
+        });
+    </script>
+}
