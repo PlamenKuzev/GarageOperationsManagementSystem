@@ -1,0 +1,95 @@
+@* Parameters: double? InitLat, double? InitLng *@
+@{
+    var initLat = ViewData["InitLat"];
+    var initLng = ViewData["InitLng"];
+    var hasCoords = initLat != null && initLng != null;
+}
+
+<div class="mb-2">
+    <label class="form-label">Pin location on map</label>
+    <div id="map-picker" style="height: 350px; border-radius: 6px; border: 1px solid #dee2e6;"></div>
+    <div class="d-flex gap-2 mt-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="map-clear-btn">Clear pin</button>
+        <span class="text-muted small align-self-center" id="map-hint">Click the map to place a pin</span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col mb-2">
+        <label for="Latitude" class="form-label">Latitude</label>
+        <input id="Latitude" name="Latitude" class="form-control" type="number" step="any"
+               value="@initLat" placeholder="e.g. 42.6977" />
+    </div>
+    <div class="col mb-2">
+        <label for="Longitude" class="form-label">Longitude</label>
+        <input id="Longitude" name="Longitude" class="form-control" type="number" step="any"
+               value="@initLng" placeholder="e.g. 23.3219" />
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN2GGnk=" crossorigin=""></script>
+
+<script>
+    (function () {
+        var initLat = @(hasCoords ? initLat!.ToString() : "null");
+        var initLng = @(hasCoords ? initLng!.ToString() : "null");
+
+        var map = L.map('map-picker').setView(
+            initLat !== null ? [initLat, initLng] : [42.6977, 23.3219], // default: Sofia
+            initLat !== null ? 14 : 7
+        );
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker = null;
+        var latInput = document.getElementById('Latitude');
+        var lngInput = document.getElementById('Longitude');
+        var hint = document.getElementById('map-hint');
+
+        function placeMarker(latlng) {
+            if (marker) {
+                marker.setLatLng(latlng);
+            } else {
+                marker = L.marker(latlng, { draggable: true }).addTo(map);
+                marker.on('dragend', function () {
+                    updateInputs(marker.getLatLng());
+                });
+            }
+            updateInputs(latlng);
+        }
+
+        function updateInputs(latlng) {
+            latInput.value = latlng.lat.toFixed(6);
+            lngInput.value = latlng.lng.toFixed(6);
+            hint.textContent = latlng.lat.toFixed(5) + ', ' + latlng.lng.toFixed(5);
+        }
+
+        function updateMarkerFromInputs() {
+            var lat = parseFloat(latInput.value);
+            var lng = parseFloat(lngInput.value);
+            if (!isNaN(lat) && !isNaN(lng)) {
+                placeMarker(L.latLng(lat, lng));
+                map.setView([lat, lng], map.getZoom());
+            }
+        }
+
+        map.on('click', function (e) { placeMarker(e.latlng); });
+
+        latInput.addEventListener('change', updateMarkerFromInputs);
+        lngInput.addEventListener('change', updateMarkerFromInputs);
+
+        document.getElementById('map-clear-btn').addEventListener('click', function () {
+            if (marker) { map.removeLayer(marker); marker = null; }
+            latInput.value = '';
+            lngInput.value = '';
+            hint.textContent = 'Click the map to place a pin';
+        });
+
+        if (initLat !== null) placeMarker(L.latLng(initLat, initLng));
+    })();
+</script>
