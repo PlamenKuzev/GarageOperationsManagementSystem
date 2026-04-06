@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GarageOperationsManagementSystem.styles.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
+    <script>if(localStorage.getItem('darkMode')==='true')document.documentElement.classList.add('dark-mode');</script>
 </head>
 <body>
     <header>
@@ -53,6 +54,7 @@
                             </li>
                         }
                     </ul>
+                    <button id="dark-mode-toggle">☾ Dark</button>
                     <partial name="_LoginPartial" />
                 </div>
             </div>
