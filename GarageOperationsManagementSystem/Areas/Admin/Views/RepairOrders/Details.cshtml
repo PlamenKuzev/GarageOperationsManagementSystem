@@ -37,7 +37,7 @@
                     <dd class="col-sm-7">@(Model.CompletionDate.HasValue ? Model.CompletionDate.Value.ToString("dd MMM yyyy") : "—")</dd>
 
                     <dt class="col-sm-5">Repair price</dt>
-                    <dd class="col-sm-7">@(Model.RepairPrice.HasValue ? Model.RepairPrice.Value.ToString("C") : "—")</dd>
+                    <dd class="col-sm-7">@(Model.RepairPrice.HasValue ? $"{Model.RepairPrice.Value:F2} EUR" : "—")</dd>
                 </dl>
             </div>
         </div>

@@ -41,7 +41,7 @@ else
                         <td class="fw-semibold">@emp.Name</td>
                         <td>@emp.Position</td>
                         <td>@emp.GarageName</td>
-                        <td>@emp.Salary.ToString("C0")</td>
+                        <td>@emp.Salary.ToString("F0") EUR</td>
                         <td>@emp.WorkingSince.ToString("dd MMM yyyy")</td>
                         <td>
                             @if (emp.IsTrusted)

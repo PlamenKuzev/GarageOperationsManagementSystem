@@ -87,7 +87,7 @@ else
                                                 <span class="badge bg-warning text-dark">In progress</span>
                                             }
                                         </td>
-                                        <td>@(order.RepairPrice.HasValue ? order.RepairPrice.Value.ToString("C") : "—")</td>
+                                        <td>@(order.RepairPrice.HasValue ? $"{order.RepairPrice.Value:F2} EUR" : "—")</td>
                                     </tr>
                                 }
                             </tbody>
